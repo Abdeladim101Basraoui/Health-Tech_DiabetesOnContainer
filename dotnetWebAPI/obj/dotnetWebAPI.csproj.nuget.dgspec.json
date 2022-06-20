@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\abdom\\Desktop\\dotnetWebAPI\\dotnetWebAPI\\dotnetWebAPI.csproj": {}
+    "C:\\Users\\abdom\\Desktop\\Health-Tech_DiabetesOnContainer\\dotnetWebAPI\\dotnetWebAPI.csproj": {}
   },
   "projects": {
-    "C:\\Users\\abdom\\Desktop\\dotnetWebAPI\\dotnetWebAPI\\dotnetWebAPI.csproj": {
+    "C:\\Users\\abdom\\Desktop\\Health-Tech_DiabetesOnContainer\\dotnetWebAPI\\dotnetWebAPI.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\abdom\\Desktop\\dotnetWebAPI\\dotnetWebAPI\\dotnetWebAPI.csproj",
+        "projectUniqueName": "C:\\Users\\abdom\\Desktop\\Health-Tech_DiabetesOnContainer\\dotnetWebAPI\\dotnetWebAPI.csproj",
         "projectName": "dotnetWebAPI",
-        "projectPath": "C:\\Users\\abdom\\Desktop\\dotnetWebAPI\\dotnetWebAPI\\dotnetWebAPI.csproj",
+        "projectPath": "C:\\Users\\abdom\\Desktop\\Health-Tech_DiabetesOnContainer\\dotnetWebAPI\\dotnetWebAPI.csproj",
         "packagesPath": "C:\\Users\\abdom\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\abdom\\Desktop\\dotnetWebAPI\\dotnetWebAPI\\obj\\",
+        "outputPath": "C:\\Users\\abdom\\Desktop\\Health-Tech_DiabetesOnContainer\\dotnetWebAPI\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\abdom\\AppData\\Roaming\\NuGet\\NuGet.Config",
