@@ -76,7 +76,7 @@ namespace DiabetesOnContainer.Controllers
 
         // PUT: api/ExamainMedicals/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{PresId}/{ExamId}")]
+        [HttpPut("Change/{PresId}/{ExamId}")]
         public async Task<IActionResult> PutExamainMedical(int PresId, int ExamId, ExamenMed_Update update)
         {
 
@@ -100,7 +100,7 @@ namespace DiabetesOnContainer.Controllers
         }
 
         //Patch: api/FichePatients/5/12
-        [HttpPatch("update/{PresId}/{ExamId}")]
+        [HttpPatch("Update/{PresId}/{ExamId}")]
         public async Task<IActionResult> ExamPatch(int PresId, int ExamId, [FromBody] JsonPatchDocument<ExamenMed_Update> update)
         {
 
@@ -137,7 +137,7 @@ namespace DiabetesOnContainer.Controllers
 
         // POST: api/ExamainMedicals
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost]
+        [HttpPost("New")]
         public async Task<ActionResult<ExamenMed_Read>> PostExamainMedical(ExamenMed_CD examainMedical)
         {
             if (_context.ExamainMedicals == null)
@@ -152,7 +152,7 @@ namespace DiabetesOnContainer.Controllers
         }
 
         // DELETE: api/ExamainMedicals/5
-        [HttpDelete("{PresId}")]
+        [HttpDelete("Delete/{PresId}")]
         public async Task<IActionResult> DeleteFichePatientByCIN(int PresId)
         {
             if (_context.ExamainMedicals == null)
@@ -174,7 +174,7 @@ namespace DiabetesOnContainer.Controllers
         }
 
 
-        [HttpDelete("{PresId}/{ExamId}")]
+        [HttpDelete("Delete/    {PresId}/{ExamId}")]
         public async Task<IActionResult> DeleteFichePatientByID(int PresId, int ExamId)
         {
             var fichePatient = ExamExistsUP(PresId, ExamId).Result;
