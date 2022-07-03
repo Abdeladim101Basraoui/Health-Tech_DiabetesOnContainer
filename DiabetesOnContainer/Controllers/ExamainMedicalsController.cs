@@ -92,7 +92,7 @@ namespace DiabetesOnContainer.Controllers
             _mapper.Map(update, fiche);
 
             //send the model data to be modified
-            _context.Entry(fiche).State = EntityState.Modified;
+            _context.Entry(fiche).State = EntityState.Detached;
 
             await _context.SaveChangesAsync();
 
@@ -101,7 +101,7 @@ namespace DiabetesOnContainer.Controllers
 
         //Patch: api/FichePatients/5/12
         [HttpPatch("Update/{PresId}/{ExamId}")]
-        public async Task<IActionResult> ExamPatch(int PresId, int ExamId, [FromBody] JsonPatchDocument<ExamenMed_Update> update)
+        public async Task<IActionResult> ExamPatch(int PresId, int ExamId, [FromBody] JsonPatchDocument<ExamenMed_Read> update)
         {
 
             try
@@ -112,19 +112,25 @@ namespace DiabetesOnContainer.Controllers
                     return NotFound("the fiche Patient does not exist");
                 }
 
-                var fiche = FicheExistsPatch(PresId, ExamId).Result;
+                var fiche = await _context.ExamainMedicals
+                    .Where(con => con.PrescriptionId == PresId && con.ExamainId == ExamId)
+                    .ProjectTo<ExamenMed_Read>(_mapper.ConfigurationProvider)
+                    .FirstOrDefaultAsync();
 
                 if (fiche == null)
                 {
                     return NotFound("la fiche  >> " + ExamId + " <<   does not exists");
                 }
+
                 update.ApplyTo(fiche);
+
                 var value = _mapper.Map<ExamainMedical>(fiche);
 
-                _context.Entry(value).State = EntityState.Modified;
+                _context.Entry(value).State = EntityState.Detached;
+
                 await _context.SaveChangesAsync();
 
-                return AcceptedAtAction(nameof(GetExamtByID), new { PresId = PresId, ExamId = ExamId }, fiche);
+                return AcceptedAtAction(nameof(GetExamtByID), new { PresId, ExamId }, fiche);
 
             }
             catch (Exception ex)                
@@ -201,14 +207,6 @@ namespace DiabetesOnContainer.Controllers
         }
 
 
-        private async Task<ExamenMed_Update> FicheExistsPatch(int PresId, int ExamId)
-        {
-            var row = await _context.ExamainMedicals
-                        .Where(con => con.PrescriptionId == PresId && con.ExamainId== ExamId)
-                        .ProjectTo<ExamenMed_Update>(_mapper.ConfigurationProvider)
-                      .FirstOrDefaultAsync();
 
-            return row;
-        }
     }
 }

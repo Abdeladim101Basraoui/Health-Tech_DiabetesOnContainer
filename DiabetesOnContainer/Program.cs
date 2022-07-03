@@ -11,6 +11,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers()
                    .AddNewtonsoftJson();
 
+
 builder.Services.AddDbContext<DiabetesOnContainersContext>(options =>
 {
     options.UseSqlServer(builder.Configuration.GetConnectionString("dbconn"));
@@ -38,10 +39,11 @@ builder.Services.AddSwaggerGen(
             Description = "api first version for creating database of patient records"
         });
         var xmlfile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
-        var xmlpath = Path.Combine(AppContext.BaseDirectory,xmlfile);
+        var xmlpath = Path.Combine(AppContext.BaseDirectory, xmlfile);
 
         options.IncludeXmlComments(xmlpath);
-    }).AddSwaggerGenNewtonsoftSupport();
+    })  
+            .AddSwaggerGenNewtonsoftSupport();
 
 var app = builder.Build();
 

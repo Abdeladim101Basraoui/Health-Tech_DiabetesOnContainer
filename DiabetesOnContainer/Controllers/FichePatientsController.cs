@@ -36,7 +36,8 @@ namespace DiabetesOnContainer.Controllers
             }
             return await _context.FichePatients
                 .Include(con => con.Consultations)
-                .ThenInclude(fk=>fk.Question)
+                .ThenInclude(fk => fk.Question)
+                .Include(fk => fk.ExamainMedicals)
                 .ProjectTo<FichePatient_Read>(_mapper.ConfigurationProvider)
                 .ToListAsync();
         }
@@ -54,9 +55,10 @@ namespace DiabetesOnContainer.Controllers
             return await _context.FichePatients
                 .Include(con => con.Consultations)
                 .ThenInclude(fk => fk.Question)
+                .Include(fk => fk.ExamainMedicals)
                 .Where(fk => fk.Cin == cin)
-                                   .ProjectTo<FichePatient_Read>(_mapper.ConfigurationProvider)
-                                   .ToListAsync();
+                .ProjectTo<FichePatient_Read>(_mapper.ConfigurationProvider)
+                .ToListAsync();
         }
 
         // GET: api/FichePatients/5
@@ -67,7 +69,13 @@ namespace DiabetesOnContainer.Controllers
             {
                 return NotFound("the patient does not exists");
             }
-            var fichePatient = _mapper.Map<FichePatient_Read>(FichePatientExistsUP(PrescriptionID, cin).Result);
+            var fichePatient = await _context.FichePatients
+                .Include(con => con.Consultations)
+                .ThenInclude(fk => fk.Question)
+                .Include(fk => fk.ExamainMedicals)
+                .Where(fk => fk.Cin == cin && fk.PrescriptionId == PrescriptionID)
+                .ProjectTo<FichePatient_Read>(_mapper.ConfigurationProvider)
+                .FirstOrDefaultAsync();
 
             if (fichePatient == null)
             {
@@ -104,7 +112,7 @@ namespace DiabetesOnContainer.Controllers
 
         //Patch: api/FichePatients/5/12
         [HttpPatch("/{Cin}/{PreId}")]
-        public async Task<IActionResult> PatchFilePatient(string Cin,int PreId, [FromBody] JsonPatchDocument<FichePatient_Patch> update)
+        public async Task<IActionResult> PatchFilePatient(string Cin, int PreId, [FromBody] JsonPatchDocument<FichePatient_Patch> update)
         {
 
             try
@@ -119,7 +127,7 @@ namespace DiabetesOnContainer.Controllers
 
                 if (fiche == null)
                 {
-                    return NotFound("la fiche"+PreId+ "does not exists");
+                    return NotFound("la fiche" + PreId + "does not exists");
                 }
                 update.ApplyTo(fiche);
                 var value = _mapper.Map<FichePatient>(fiche);
@@ -195,8 +203,8 @@ namespace DiabetesOnContainer.Controllers
         private async Task<FichePatient> FichePatientExistsUP(int Id, string Cin)
         {
             var row = await _context.FichePatients
-                      .Include(con => con.Consultations)
-                .ThenInclude(fk => fk.Question)
+                    .Include(con => con.Consultations)
+                    .ThenInclude(fk => fk.Question)
                     .FirstOrDefaultAsync(req => req.Cin == Cin && req.PrescriptionId == Id);
             return row;
         }

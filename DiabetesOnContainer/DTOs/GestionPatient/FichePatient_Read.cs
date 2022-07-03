@@ -7,5 +7,8 @@ namespace DiabetesOnContainer.DTOs.GestionPatient
     {
         public int PrescriptionId { get; set; }
         public string patientFullName { get; set; }
+        public ICollection<Question> Questions { get; set; }
+
+        public ICollection<ExamainMedical> examainMedicals { get; set; }
     }
 }
