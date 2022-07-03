@@ -1,4 +1,4 @@
-﻿namespace DiabetesOnContainer.DTOs.FichePatient
+﻿namespace DiabetesOnContainer.DTOs.GestionPatient
 { 
     public class Echographie_READ:Echographie_CUD
     {
