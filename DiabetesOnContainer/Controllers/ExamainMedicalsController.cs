@@ -45,10 +45,10 @@ namespace DiabetesOnContainer.Controllers
         {
             if (_context.ExamainMedicals == null || _context.FichePatients.Find(PresId) == null)
             {
-                return NotFound("the aptient does not exists");
+                return NotFound("cette fiche n'existe pas");
             }
 
-            else if (!ExamExists(PresId)) return NotFound("ce patient n'a aucun historique");
+            if (!ExamExists(PresId)) return NotFound("ce examen >> "+PresId+" << n'exist pas");
             return await _context.ExamainMedicals
                 .Where(con => con.PrescriptionId == PresId)
                 .ProjectTo<ExamenMed_Read>(_mapper.ConfigurationProvider)
@@ -59,7 +59,7 @@ namespace DiabetesOnContainer.Controllers
         [HttpGet("{PresId}/{ExamId}")]
         public async Task<ActionResult<ExamenMed_Read>> GetExamtByID(int PresId, int ExamId)
         {
-            if (_context.FichePatients == null || _context.FichePatients.Find(PresId) == null)
+            if ( _context.FichePatients.Find(PresId) == null)
             {
                 return NotFound("the fiche Patient does not exists");
             }

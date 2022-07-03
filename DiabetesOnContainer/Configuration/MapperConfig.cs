@@ -91,8 +91,9 @@ namespace DiabetesOnContainer.Configuration
             CreateMap<Bilan_CUD, Bilan>().ReverseMap();
 
             ////ParamBio
-            //CreateMap<ParamBio, ParamBio_READ>().ReverseMap();
-            //CreateMap<ParamBio, ParamBio_CUD>().ReverseMap();
+            CreateMap<ParamsBio, ParamBio_Read>().ReverseMap();
+            CreateMap<ParamsBio, ParamBio_CD>().ReverseMap();
+            CreateMap<ParamsBio, ParamBio_Update>().ReverseMap();
 
             ////Echographie
             //CreateMap<Echographie, Echographie_READ>().ReverseMap();
