@@ -7,8 +7,8 @@ namespace DiabetesOnContainer.Models
     {
         public FichePatient()
         {
-            Consultations = new HashSet<Consultation>();
             ExamainMedicals = new HashSet<ExamainMedical>();
+            Questions = new HashSet<Question>();
         }
 
         public int PrescriptionId { get; set; }
@@ -20,7 +20,8 @@ namespace DiabetesOnContainer.Models
 
         public virtual Patient CinNavigation { get; set; } = null!;
         public virtual Diabeticien RefMedNavigation { get; set; } = null!;
-        public virtual ICollection<Consultation> Consultations { get; set; }
         public virtual ICollection<ExamainMedical> ExamainMedicals { get; set; }
+
+        public virtual ICollection<Question> Questions { get; set; }
     }
 }

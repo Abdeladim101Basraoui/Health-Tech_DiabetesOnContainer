@@ -86,7 +86,7 @@ namespace DiabetesOnContainer.Controllers
 
         // PUT: api/ParamBios/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("Change/{ParamId}/{ExamId}")]
+        [HttpPut("Change/{ExamId}/{ParamId}")]
         public async Task<IActionResult> PutParamBio( int ExamId, int ParamId, ParamBio_Update update)
         {
 
@@ -208,7 +208,7 @@ namespace DiabetesOnContainer.Controllers
  
         private bool ParamBioExists(int Id)
         {
-            return (_context.ParamsBios?.Any(e => e.ParamBioId == Id)) is not null;
+            return (_context.ParamsBios?.Any(e => e.ExamainId == Id)) is not null;
         }
 
         private async Task<ParamsBio> ParamBioExistsUP( int ExamId,int ParamId)

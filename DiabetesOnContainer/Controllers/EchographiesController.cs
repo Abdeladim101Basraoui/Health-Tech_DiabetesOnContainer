@@ -1,123 +1,220 @@
-﻿//using System;
-//using System.Collections.Generic;
-//using System.Linq;
-//using System.Threading.Tasks;
-//using Microsoft.AspNetCore.Http;
-//using Microsoft.AspNetCore.Mvc;
-//using Microsoft.EntityFrameworkCore;
-//using DiabetesOnContainer.Models;
-//using AutoMapper;
-//using DiabetesOnContainer.DTOs.ExamainMedical.Diagnostics;
-//using AutoMapper.QueryableExtensions;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using DiabetesOnContainer.Models;
+using AutoMapper;
+using DiabetesOnContainer.DTOs.GestionPatient;
+using AutoMapper.QueryableExtensions;
+using Microsoft.AspNetCore.JsonPatch;
 
-//namespace DiabetesOnContainer.Controllers
-//{
-//    [Route("api/[controller]")]
-//    [ApiController]
-//    public class EchographiesController : ControllerBase
-//    {
-//        private readonly DiabetesOnContainersContext _context;
-//        private readonly IMapper _mapper;
+namespace DiabetesOnContainer.Controllers
+{
+    [Route("api/[controller]")]
+    [ApiController]
+    public class EchographiesController : ControllerBase
+    {
+        private readonly DiabetesOnContainersContext _context;
+        private readonly IMapper _mapper;
 
-//        public EchographiesController(DiabetesOnContainersContext context, IMapper mapper)
-//        {
-//            _context = context;
-//            this._mapper = mapper;
-//        }
+        public EchographiesController(DiabetesOnContainersContext context, IMapper mapper)
+        {
+            _context = context;
+            this._mapper = mapper;
+        }
 
-//        //GET: api/Echographies
-//        [HttpGet]
-//        public async Task<ActionResult<IEnumerable<Echographie_READ>>> GetEchographies()
-//        {
-//            if (_context.Echographies == null)
-//            {
-//                return NotFound();
-//            }
-//            return await _context.Echographies
-//                .ProjectTo<Echographie_READ>(_mapper.ConfigurationProvider)
-//                .ToListAsync();
-//        }
+        //GET: api/Echographies
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<Echographie_READ>>> GetEchographies()
+        {
+            if (_context.Echographies == null)
+            {
+                return NotFound();
+            }
+            return await _context.Echographies
+                .ProjectTo<Echographie_READ>(_mapper.ConfigurationProvider)
+                .ToListAsync();
+        }
 
-//        //GET: api/Echographies/5
-//        [HttpGet("{id}")]
-//        public async Task<ActionResult<Echographie_READ>> GetEchographie(int id)
-//        {
-//            if (_context.Echographies == null)
-//            {
-//                return NotFound();
-//            }
-//            var echographie = await _context.Echographies
-//                .ProjectTo<Echographie_READ>(_mapper.ConfigurationProvider)
-//                .FirstOrDefaultAsync(req => req.EchographieId == id);
+        //GET: api/Echographies/5
+        [HttpGet("{ExamId}")]
+        public async Task<ActionResult<IEnumerable<Echographie_READ>>> GetEchographieByExam(int ExamId)
+        {
+            if (_context.ExamainMedicals.Find(ExamId) == null)
+            {
+                return NotFound("Exmaen ne trouve pas");
+            }
 
-//            if (echographie == null)
-//            {
-//                return NotFound();
-//            }
+            if (!EchographieExists(ExamId))
+                return NotFound($"ce paramBio d''examen num :' >>> {ExamId} <<< ' n''existe pas");
 
-//            return echographie;
-//        }
+            var Echog = await _context.Echographies
+                .Where(req => req.ExamainId == ExamId)
+                .ProjectTo<Echographie_READ>(_mapper.ConfigurationProvider)
+                .ToListAsync();
 
-//        //PUT: api/Echographies/5
-//        //To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-//        [HttpPut("{id}")]
-//        public async Task<IActionResult> PutEchographie(int id, Echographie_CUD request)
-//        {
-//            var echographie = await _context.Echographies
-//                                .FindAsync(id);
+            if (Echog == null)
+            {
+                return NotFound();
+            }
 
-//            if (echographie == null)
-//            {
-//                return NotFound();
-//            }
-
-//            _mapper.Map(request, echographie);
-//            _context.Entry(echographie).State = EntityState.Modified;
+            return Echog;
+        }
 
 
-//            return NoContent();
-//        }
+        [HttpGet("{ExamId}/{EchoId}")]
+        public async Task<ActionResult<Echographie_READ>> GetEchographieById(int ExamId, int EchoId)
+        {
+            if (_context.ExamainMedicals.Find(ExamId) == null)
+            {
+                return NotFound("the Examen Medical does not exists");
+            }
+            var echog = _mapper.Map<Echographie_READ>(EchogExistsUP(ExamId, EchoId).Result);
 
-//        //POST: api/Echographies
-//        //To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-//        [HttpPost]
-//        public async Task<ActionResult<Echographie_CUD>> PostEchographie(Echographie_CUD request)
-//        {
-//            if (_context.Echographies == null)
-//            {
-//                return Problem("Entity set 'DiabetesOnContainersContext.Echographies'  is null.");
-//            }
+            if (echog == null)
+            {
+                return NotFound();
+            }
 
-//            var echographie = _mapper.Map<Echographie>(request);
-//            await _context.Echographies.AddAsync(echographie);
-//            await _context.SaveChangesAsync();
+            return echog;
+        }
 
-//            return CreatedAtAction(nameof(GetEchographie), new { id = echographie.EchographieId }, echographie);
-//        }
 
-//        //DELETE: api/Echographies/5
-//        [HttpDelete("{id}")]
-//        public async Task<IActionResult> DeleteEchographie(int id)
-//        {
-//            if (_context.Echographies == null)
-//            {
-//                return NotFound();
-//            }
-//            var echographie = await _context.Echographies.FindAsync(id);
-//            if (echographie == null)
-//            {
-//                return NotFound();
-//            }
+        //PUT: api/Echographies/5
+        //To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        [HttpPut("Change/{ExamId}/{EchoId}")]
+        public async Task<IActionResult> PutEchographie(int ExamId, int EchoId, Echographie_Update update)
+        {
 
-//            _context.Echographies.Remove(echographie);
-//            await _context.SaveChangesAsync();
+            var Echog = EchogExistsUP(ExamId, EchoId).Result;
 
-//            return NoContent();
-//        }
+            if (Echog == null)
+            {
+                return NotFound();
+            }
 
-//        private bool EchographieExists(int id)
-//        {
-//            return (_context.Echographies?.Any(e => e.EchographieId == id)).GetValueOrDefault();
-//        }
-//    }
-//}
+            //map the values comming as DTO class to the Model class
+
+            _mapper.Map(update, Echog);
+
+            //send the model data to be modified
+            _context.Entry(Echog).State = EntityState.Modified;
+
+            await _context.SaveChangesAsync();
+
+            //return NoContent();
+            return AcceptedAtAction(nameof(GetEchographies), Echog);
+        }
+
+        [HttpPatch("Update/{ExamId}/{EchoId}")]
+        public async Task<IActionResult> EchographiePatch(int ExamId, int EchoId, [FromBody] JsonPatchDocument<Echographie_CD> update)
+        {
+
+            try
+            {
+
+                if (_context.Echographies.Find(EchoId) == null)
+                {
+                    return NotFound("the Param does not exist");
+                }
+
+                var Echog = await _context.Echographies
+                    .Where(con => con.EchographieId== EchoId && con.ExamainId == ExamId)
+                    .ProjectTo<Echographie_CD>(_mapper.ConfigurationProvider)
+                    .FirstOrDefaultAsync();
+
+                if (Echog == null)
+                {
+                    return NotFound("the Param  >> " + ExamId + " <<   does not exists");
+                }
+
+                update.ApplyTo(Echog);
+
+                var value = _mapper.Map<Echography>(Echog);
+
+                _context.Entry(value).State = EntityState.Detached;
+
+                await _context.SaveChangesAsync();
+
+                return AcceptedAtAction(nameof(GetEchographieById), new { ExamId , EchoId }, Echog);
+
+            }
+            catch (Exception ex)
+            {
+
+                return Content(ex.Message);
+            }
+        }
+
+        //POST: api/Echographies
+        //To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        [HttpPost("New")]
+        public async Task<ActionResult<Echographie_READ>> PostEchographie(Echographie_CD echographie)
+        {
+            if (_context.Echographies==null)
+            {
+                return Problem("Entity set 'DiabetesOnContainersContext.ExamainMedicals'  is null.");
+            }
+            var Echog = _mapper.Map<Echography>(echographie);
+
+            _context.Echographies.Add(Echog);
+            await _context.SaveChangesAsync();
+
+            return CreatedAtAction(nameof(GetEchographieByExam), new { ExamId = echographie.ExamainId }, echographie);
+        }
+
+        //DELETE: api/Echographies/5
+        [HttpDelete("Delete/{ExamId}")]
+        public async Task<IActionResult> DeleteEchographieByExam(int ExamId)
+        {
+            if (_context.ParamsBios == null)
+            {
+                return NotFound();
+            }
+
+            var Echog = await _context.Echographies
+                .Where(con => con.ExamainId == ExamId)
+                .ToListAsync();
+            if (Echog == null)
+            {
+                return NotFound();
+            }
+
+            _context.Echographies.RemoveRange(Echog);
+            await _context.SaveChangesAsync();
+
+            return NoContent();
+        }
+
+        [HttpDelete("Delete/{ExamId}/{EchogId}")]
+        public async Task<IActionResult> DeleteEchographieById(int ExamId, int EchogId)
+        {
+            var Echog = EchogExistsUP(ExamId, EchogId).Result;
+            if (Echog == null)
+            {
+                return NotFound();
+            }
+
+            _context.Echographies.Remove(Echog);
+            await _context.SaveChangesAsync();
+
+            return NoContent();
+        }
+
+        private bool EchographieExists(int Id)
+        {
+            return (_context.Echographies?.Any(e => e.ExamainId == Id)) is not null;
+        }
+
+        private async Task<Echography> EchogExistsUP(int ExamId, int EchoId)
+        {
+            var row = await _context.Echographies
+                    .FirstOrDefaultAsync(req => req.ExamainId == ExamId && req.EchographieId == EchoId);
+            return row;
+        }
+    }
+
+}

@@ -20,7 +20,6 @@ namespace DiabetesOnContainer.Models
         public virtual DbSet<Assistant> Assistants { get; set; } = null!;
         public virtual DbSet<Bilan> Bilans { get; set; } = null!;
         public virtual DbSet<CasComplication> CasComplications { get; set; } = null!;
-        public virtual DbSet<Consultation> Consultations { get; set; } = null!;
         public virtual DbSet<Diabeticien> Diabeticiens { get; set; } = null!;
         public virtual DbSet<Echography> Echographies { get; set; } = null!;
         public virtual DbSet<ExamainMedical> ExamainMedicals { get; set; } = null!;
@@ -32,7 +31,7 @@ namespace DiabetesOnContainer.Models
         public virtual DbSet<Question> Questions { get; set; } = null!;
         public virtual DbSet<Traitement> Traitements { get; set; } = null!;
 
-
+ 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -144,34 +143,6 @@ namespace DiabetesOnContainer.Models
                     .HasForeignKey(d => d.PatientId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_CasComplication_Patient");
-            });
-
-            modelBuilder.Entity<Consultation>(entity =>
-            {
-                entity.HasKey(e => new { e.PrescriptionId, e.QuestionId })
-                    .HasName("PK_Consultation");
-
-                entity.Property(e => e.PrescriptionId).HasColumnName("Prescription_ID");
-
-                entity.Property(e => e.QuestionId).HasColumnName("Question_ID");
-
-                entity.Property(e => e.EtatDuQuestion)
-                    .HasMaxLength(10)
-                    .IsUnicode(false);
-
-                entity.Property(e => e.MedecinNotes).IsUnicode(false);
-
-                entity.HasOne(d => d.Prescription)
-                    .WithMany(p => p.Consultations)
-                    .HasForeignKey(d => d.PrescriptionId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_Consultation_FichePatient");
-
-                entity.HasOne(d => d.Question)
-                    .WithMany(p => p.Consultations)
-                    .HasForeignKey(d => d.QuestionId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_Consultation_Questions");
             });
 
             modelBuilder.Entity<Diabeticien>(entity =>
@@ -322,6 +293,23 @@ namespace DiabetesOnContainer.Models
                     .HasForeignKey(d => d.RefMed)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_FichePatient_Diabeticien");
+
+                entity.HasMany(d => d.Questions)
+                    .WithMany(p => p.Prescriptions)
+                    .UsingEntity<Dictionary<string, object>>(
+                        "Consultation",
+                        l => l.HasOne<Question>().WithMany().HasForeignKey("QuestionId").OnDelete(DeleteBehavior.ClientSetNull).HasConstraintName("FK_Consultation_Questions"),
+                        r => r.HasOne<FichePatient>().WithMany().HasForeignKey("PrescriptionId").OnDelete(DeleteBehavior.ClientSetNull).HasConstraintName("FK_Consultation_FichePatient"),
+                        j =>
+                        {
+                            j.HasKey("PrescriptionId", "QuestionId").HasName("PK_Consultation");
+
+                            j.ToTable("Consultations");
+
+                            j.IndexerProperty<int>("PrescriptionId").HasColumnName("Prescription_ID");
+
+                            j.IndexerProperty<int>("QuestionId").HasColumnName("Question_ID");
+                        });
             });
 
             modelBuilder.Entity<Historique>(entity =>
@@ -418,6 +406,12 @@ namespace DiabetesOnContainer.Models
             modelBuilder.Entity<Question>(entity =>
             {
                 entity.Property(e => e.QuestionId).HasColumnName("Question_ID");
+
+                entity.Property(e => e.EtatDuQuestion)
+                    .HasMaxLength(10)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.MedecinNotes).IsUnicode(false);
 
                 entity.Property(e => e.Question1).HasColumnName("Question");
             });

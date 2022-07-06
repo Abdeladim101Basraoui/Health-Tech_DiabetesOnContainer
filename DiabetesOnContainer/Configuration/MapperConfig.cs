@@ -61,11 +61,11 @@ namespace DiabetesOnContainer.Configuration
             CreateMap<Historique_CUD, Historique>().ReverseMap();
 
             //consultation
-            CreateMap<Consultation, Consultation_Read>()
-                                .ForMember(mem => mem.QuestionIS, val => val.MapFrom
-                                               (data => $"{data.Question.Question1}"));
-            CreateMap<Consultation_Create, Consultation>().ReverseMap();
-            CreateMap<Consultation_update, Consultation>().ReverseMap();
+            //CreateMap<Consultation, Consultation_Read>()
+            //                    //.ForMember(mem => mem.QuestionIS, val => val.MapFrom
+            //                    //               (data => $"{data.Question.Question1}"))
+            //                    .ReverseMap();
+            //CreateMap<Consultation_Create, Consultation>().ReverseMap();
 
             //Fiche Patient
             CreateMap<FichePatient, FichePatient_Read>()
@@ -96,8 +96,9 @@ namespace DiabetesOnContainer.Configuration
             CreateMap<ParamsBio, ParamBio_Update>().ReverseMap();
 
             ////Echographie
-            //CreateMap<Echographie, Echographie_READ>().ReverseMap();
-            //CreateMap<Echographie_CUD, Echographie>().ReverseMap();
+            CreateMap<Echography, Echographie_READ>().ReverseMap();
+            CreateMap<Echographie_CD, Echography>().ReverseMap();
+            CreateMap<Echographie_Update, Echography>().ReverseMap();
         }
     }
 }

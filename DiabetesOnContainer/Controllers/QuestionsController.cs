@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using DiabetesOnContainer.Models;
 using AutoMapper;
-using DiabetesOnContainer.DTOs.FichePatient;
+using DiabetesOnContainer.DTOs.GestionPatient;
 using AutoMapper.QueryableExtensions;
 
 namespace DiabetesOnContainer.Controllers
@@ -92,7 +92,7 @@ namespace DiabetesOnContainer.Controllers
             _context.Questions.Add(question);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction(nameof(GetQuestion), new { id = question.QuestionId }, question);
+            return CreatedAtAction(nameof(GetQuestion), new { id = question.QuestionId }, request);
         }
 
         // DELETE: api/Questions/5

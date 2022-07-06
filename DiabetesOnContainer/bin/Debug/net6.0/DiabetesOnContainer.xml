@@ -10,5 +10,21 @@
             </summary>
             <returns></returns>
         </member>
+        <member name="M:DiabetesOnContainer.Controllers.FichePatientsController.AddQuestions(System.String,DiabetesOnContainer.DTOs.GestionPatient.Consultation_Create)">
+            <summary>
+                Questions
+            </summary>
+            <param name="Id"></param>
+            <param name="Cin"></param>
+            <returns></returns>
+        </member>
+        <member name="M:DiabetesOnContainer.Controllers.FichePatientsController.AddQuestions(System.String,System.Int32,DiabetesOnContainer.DTOs.GestionPatient.Question_CUD)">
+            <summary>
+            add new question not exists in the questions table
+            </summary>
+            <param name="Cin"></param>
+            <param name="question"></param>
+            <returns></returns>
+        </member>
     </members>
 </doc>

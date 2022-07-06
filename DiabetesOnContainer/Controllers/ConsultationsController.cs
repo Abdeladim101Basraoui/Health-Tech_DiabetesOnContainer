@@ -8,7 +8,7 @@
 //using DiabetesOnContainer.Models;
 //using AutoMapper;
 //using AutoMapper.QueryableExtensions;
-//using DiabetesOnContainer.DTOs.FichePatient;
+//using DiabetesOnContainer.DTOs.GestionPatient;
 
 //namespace DiabetesOnContainer.Controllers
 //{
@@ -25,30 +25,15 @@
 //            this._mapper = mapper;
 //        }
 
-//        // GET: api/Consultations
-//        [HttpGet]
-//        public async Task<ActionResult<IEnumerable<Consultation_Read>>> GetConsultations()
-//        {
-//            if (_context.Consultations == null)
-//            {
-//                return NotFound();
-//            }
-//            var consult = await _context.Consultations.Include(rq => rq.Question)
-//                    .ToListAsync();
-//            return Ok(_mapper.Map<IEnumerable<Consultation_Read>>(consult));
-//        }
 
 //        // GET: api/Consultations/5
 //        [HttpGet("{Prescription_ID}")]
 //        public async Task<ActionResult<IEnumerable<Consultation_Read>>> GetConsultation(int Prescription_ID)
 //        {
-//            if (_context.Consultations == null)
-//            {
-//                return NotFound();
-//            }
-//            var consultation = await _context.Consultations
-//                .Include(rq => rq.Question)
+//            var consultation = await _context.FichePatients
 //                .Where(con => con.PrescriptionId == Prescription_ID)
+//                .Include(rq => rq.Question)
+//                .Include(q => q.Prescription)
 //                .ToListAsync();
 //            if (consultation == null)
 //            {
@@ -68,7 +53,7 @@
 //            {
 //                return NotFound("the consultation with does cridential does not exists");
 //            }
-//            var consult = await _context.Consultations
+//            var consult = await _context.Consultation
 //                         .FirstOrDefaultAsync(req => req.PrescriptionId == Prescription_id && req.QuestionId == Question_ID);
 
 //            if (consult == null)
@@ -89,16 +74,16 @@
 //        [HttpPost]
 //        public async Task<ActionResult<Consultation_Create>> PostConsultation(Consultation_Create consultation)
 //        {
-//            if (_context.Consultations == null)
+//            if (_context.Consultation == null)
 //            {
-//                return Problem("Entity set 'DiabetesOnContainersContext.Consultations'  is null.");
+//                return Problem("Entity set 'DiabetesOnContainersContext.Consultation'  is null.");
 //            }
 //            if (await ConsultationExists(consultation.PrescriptionId, consultation.QuestionId))
 //            {
 //                return Conflict("the consultation for the given question and prescription are already exists try to change the question ");
 //            }
 //            var consult = _mapper.Map<Consultation>(consultation);
-//            await _context.Consultations.AddAsync(consult);
+//            await _context.Consultation.AddAsync(consult);
 
 //            await _context.SaveChangesAsync();
 
@@ -110,17 +95,17 @@
 //        [HttpDelete("{id}")]
 //        public async Task<IActionResult> DeleteConsultation(int id)
 //        {
-//            if (_context.Consultations == null)
+//            if (_context.Consultation == null)
 //            {
 //                return NotFound();
 //            }
-//            var consultation = await _context.Consultations.Where(req => req.PrescriptionId == id).ToListAsync();
+//            var consultation = await _context.Consultation.Where(req => req.PrescriptionId == id).ToListAsync();
 //            if (consultation == null)
 //            {
 //                return NotFound();
 //            }
 
-//            _context.Consultations.RemoveRange(consultation);
+//            _context.Consultation.RemoveRange(consultation);
 //            await _context.SaveChangesAsync();
 
 //            return NoContent();
@@ -128,7 +113,7 @@
 
 //        private async Task<bool> ConsultationExists(int P_ID, int Q_ID)
 //        {
-//            return await _context.Consultations.AnyAsync(e => e.PrescriptionId == P_ID && e.QuestionId == Q_ID);
+//            return await _context.Consultation.AnyAsync(e => e.PrescriptionId == P_ID && e.QuestionId == Q_ID);
 //        }
 //    }
 //}
