@@ -86,7 +86,7 @@ namespace DiabetesOnContainer.Controllers
         //PUT: api/Echographies/5
         //To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("Change/{ExamId}/{EchoId}")]
-        public async Task<IActionResult> PutEchographie(int ExamId, int EchoId, Echographie_Update update)
+        public async Task<IActionResult> PutEchographie(int ExamId, int EchoId, Echographie_CD update)
         {
 
             var Echog = EchogExistsUP(ExamId, EchoId).Result;
@@ -101,29 +101,24 @@ namespace DiabetesOnContainer.Controllers
             _mapper.Map(update, Echog);
 
             //send the model data to be modified
-            _context.Entry(Echog).State = EntityState.Modified;
+            _context.Entry(Echog).State = EntityState.Added;
 
             await _context.SaveChangesAsync();
 
             //return NoContent();
-            return AcceptedAtAction(nameof(GetEchographies), Echog);
+            return AcceptedAtAction(nameof(GetEchographieById),new {ExamenId = ExamId,EchoId }, Echog);
         }
 
         [HttpPatch("Update/{ExamId}/{EchoId}")]
-        public async Task<IActionResult> EchographiePatch(int ExamId, int EchoId, [FromBody] JsonPatchDocument<Echographie_CD> update)
+        public async Task<IActionResult> EchographiePatch(int ExamId, int EchoId, [FromBody] JsonPatchDocument<Echographie_READ> update)
         {
 
             try
             {
 
-                if (_context.Echographies.Find(EchoId) == null)
-                {
-                    return NotFound("the Param does not exist");
-                }
-
                 var Echog = await _context.Echographies
                     .Where(con => con.EchographieId== EchoId && con.ExamainId == ExamId)
-                    .ProjectTo<Echographie_CD>(_mapper.ConfigurationProvider)
+                    .ProjectTo<Echographie_READ>(_mapper.ConfigurationProvider)
                     .FirstOrDefaultAsync();
 
                 if (Echog == null)
@@ -135,7 +130,8 @@ namespace DiabetesOnContainer.Controllers
 
                 var value = _mapper.Map<Echography>(Echog);
 
-                _context.Entry(value).State = EntityState.Detached;
+                _context.Entry(value).State = EntityState.Modified;
+                //_context.Entry(value).CurrentValues.SetValues(_context.Echographies);
 
                 await _context.SaveChangesAsync();
 
@@ -189,7 +185,7 @@ namespace DiabetesOnContainer.Controllers
             return NoContent();
         }
 
-        [HttpDelete("Delete/{ExamId}/{EchogId}")]
+        [HttpPost("Delete/{ExamId}/{EchogId}")]
         public async Task<IActionResult> DeleteEchographieById(int ExamId, int EchogId)
         {
             var Echog = EchogExistsUP(ExamId, EchogId).Result;

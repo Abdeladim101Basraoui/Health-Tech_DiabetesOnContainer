@@ -125,7 +125,7 @@ namespace DiabetesOnContainer.Controllers
                 }
             }
 
-            return CreatedAtAction(nameof(GetAssistant), new { cin = newOne.Cin }, newOne);
+            return CreatedAtAction(nameof(GetAssistant), new { cin = newOne.Cin }, assistant);
         }
 
         //patch api/assistant/as1234

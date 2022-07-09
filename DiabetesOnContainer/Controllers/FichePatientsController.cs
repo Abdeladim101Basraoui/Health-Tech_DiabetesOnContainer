@@ -45,12 +45,12 @@ namespace DiabetesOnContainer.Controllers
         [HttpGet("{cin}")]
         public async Task<ActionResult<IEnumerable<FichePatient_Read>>> GetFichePatientByCIN(string cin)
         {
-            if (_context.FichePatients == null || _context.Patients.Find(cin) == null)
+            if (_context.FichePatients == null )
             {
-                return NotFound("the aptient does not exists");
+                return NotFound("the table is EMPTY");
             }
 
-            else if (!FichePatientExists(cin)) return NotFound("ce patient n'a aucun historique");
+            if (!FichePatientExists(cin)) return NotFound("ce patient n'a aucun historique");
             return await _context.FichePatients
                 .Where(fk => fk.Cin == cin)
                 .Include(con => con.Questions)
@@ -63,10 +63,12 @@ namespace DiabetesOnContainer.Controllers
         [HttpGet("{cin}/{PrescriptionID}")]
         public async Task<ActionResult<FichePatient_Read>> GetFichePatientByID(string cin, int PrescriptionID)
         {
-            if (_context.FichePatients == null || _context.Patients.Find(cin) == null)
+            if (_context.FichePatients == null)
             {
-                return NotFound("the patient does not exists");
+                return NotFound("the table is EMPTY");
             }
+
+            if (!FichePatientExists(cin)) return NotFound("ce patient n'a aucun historique");
             var fichePatient = await _context.FichePatients
                 .Where(fk => fk.Cin == cin && fk.PrescriptionId == PrescriptionID)
                  .Include(con => con.Questions)
@@ -115,12 +117,12 @@ namespace DiabetesOnContainer.Controllers
             try
             {
 
-                if (_context.Patients.Find(Cin) == null)
-                {
-                    return NotFound("the patient does not exist");
-                }
+                //    if (_context.Patients.Find(Cin) == null)
+                //    {
+                //        return NotFound("the patient does not exist");
+                //    }
 
-                var fiche = FicheExistsPatch(Cin, PreId).Result;
+                var fiche = _mapper.Map<FichePatient_Patch>(FichePatientExistsUP( PreId, Cin).Result);
 
                 if (fiche == null)
                 {
@@ -182,7 +184,7 @@ namespace DiabetesOnContainer.Controllers
         }
 
         // DELETE: api/FichePatients/5
-        [HttpDelete("{Cin}/{PresId}")]
+        [HttpPost("{Cin}/{PresId}")]
         public async Task<IActionResult> DeleteFichePatientByID(string Cin, int PresId)
         {
             var fichePatient = FichePatientExistsUP(PresId, Cin).Result;
@@ -273,15 +275,15 @@ namespace DiabetesOnContainer.Controllers
             return _context.FichePatients?.Any(e => e.Cin == cin) is not null;
         }
 
-        private async Task<FichePatient_Patch> FicheExistsPatch(string cin, int FichId)
-        {
-            var row = await _context.FichePatients
-                           .Include(con => con.Questions)
-                        .Where(con => con.Cin == cin && con.PrescriptionId == FichId)
-                        .ProjectTo<FichePatient_Patch>(_mapper.ConfigurationProvider)
-                      .FirstOrDefaultAsync();
+        //private async Task<FichePatient_Patch> FicheExistsPatch(string cin, int FichId)
+        //{
+        //    var row = await _context.FichePatients
+        //                   .Include(con => con.Questions)
+        //                .Where(con => con.Cin == cin && con.PrescriptionId == FichId)
+        //                .ProjectTo<FichePatient_Patch>(_mapper.ConfigurationProvider)
+        //              .FirstOrDefaultAsync();
 
-            return row;
-        }
+        //    return row;
+        //}
     }
 }

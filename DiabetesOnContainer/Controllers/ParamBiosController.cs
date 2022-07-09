@@ -102,7 +102,7 @@ namespace DiabetesOnContainer.Controllers
             _mapper.Map(update, Param);
 
             //send the model data to be modified
-            _context.Entry(Param).State = EntityState.Detached;
+            _context.Entry(Param).State = EntityState.Modified;
 
             await _context.SaveChangesAsync();
 
@@ -112,15 +112,8 @@ namespace DiabetesOnContainer.Controllers
         [HttpPatch("Update/{ExamId}/{ParamId}")]
         public async Task<IActionResult> ParamPatch(int ExamId, int ParamId, [FromBody] JsonPatchDocument<ParamBio_Read> update)
         {
-
             try
             {
-
-                if (_context.ParamsBios.Find(ParamId) == null)
-                {
-                    return NotFound("the Param does not exist");
-                }
-
                 var Param = await _context.ParamsBios
                     .Where(con => con.ParamBioId == ParamId && con.ExamainId == ExamId)
                     .ProjectTo<ParamBio_Read>(_mapper.ConfigurationProvider)
@@ -135,12 +128,11 @@ namespace DiabetesOnContainer.Controllers
 
                 var value = _mapper.Map<ParamsBio>(Param);
 
-                _context.Entry(value).State = EntityState.Detached;
+                _context.Entry(value).State = EntityState.Modified;
 
                 await _context.SaveChangesAsync();
 
                 return AcceptedAtAction(nameof(GetParamBioById), new { ParamId, ExamId }, Param);
-
             }
             catch (Exception ex)
             {
@@ -190,7 +182,7 @@ namespace DiabetesOnContainer.Controllers
         }
 
 
-        [HttpDelete("Delete/{ExamId}/{ParamId}")]
+        [HttpPost("Delete/{ExamId}/{ParamId}")]
         public async Task<IActionResult> DeleteParamBioByID( int ExamId, int ParamId)
         {
             var Param = ParamBioExistsUP(ExamId,ParamId).Result;

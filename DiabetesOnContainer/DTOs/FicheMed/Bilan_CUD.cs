@@ -14,8 +14,8 @@ namespace DiabetesOnContainer.DTOs.FicheMed
         public byte[]? BilanImage { get; set; }
       
         [Required]
-        public int FicheMedtId { get; set; }
+        public int FicheMedId { get; set; }
         [Required]
-        public DateTime BilanDate { get; set; }=DateTime.Now;
+        public DateTime DateEnvoi { get; set; }=DateTime.Now;
     }
 }

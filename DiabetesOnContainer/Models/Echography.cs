@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 namespace DiabetesOnContainer.Models
 {
@@ -11,7 +12,7 @@ namespace DiabetesOnContainer.Models
         public byte[]? ImageEchographie { get; set; }
         public string? AutrePathology { get; set; }
         public int ExamainId { get; set; }
-
+        [JsonIgnore]
         public virtual ExamainMedical Examain { get; set; } = null!;
     }
 }

@@ -9,6 +9,7 @@ using DiabetesOnContainer.Models;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using DiabetesOnContainer.DTOs.FicheMed;
+using Microsoft.AspNetCore.JsonPatch;
 
 namespace DiabetesOnContainer.Controllers
 {
@@ -39,16 +40,19 @@ namespace DiabetesOnContainer.Controllers
         }
 
         // GET: api/Bilans/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<Bilan_READ>> GetBilan(int id)
+        [HttpGet("{ficheId}")]
+        public async Task<ActionResult<Bilan_READ>> GetBilan(int ficheId)
         {
             if (_context.Bilans == null)
             {
                 return NotFound();
             }
+            if (!BilanExists(ficheId))
+                return NotFound($"ce analyse d''examen num :' >>> {ficheId} <<< ' n''existe pas");
+
             var bilan = await _context.Bilans
                 .ProjectTo<Bilan_READ>(_mapper.ConfigurationProvider)
-                .FirstOrDefaultAsync(req => req.BilanId == id);
+                .FirstOrDefaultAsync(req => req.FicheMedId == ficheId);
 
             if (bilan == null)
             {
@@ -60,62 +64,153 @@ namespace DiabetesOnContainer.Controllers
 
         // PUT: api/Bilans/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutBilan(int id, Bilan_CUD Request)
+        [HttpPut("Change/{ficheId}/{Id}")]
+        public async Task<IActionResult> PutAnalysis(int ficheId, int Id, Bilan_CUD update)
         {
-            if (!BilanExists(id))
+
+            var fiche = BilanExistsUP(ficheId, Id).Result;
+
+            if (fiche == null)
             {
                 return NotFound();
             }
-            var bilan = await _context.Bilans.FindAsync(id);
-            if (bilan == null) return NotFound("the bilan with the id sent does not exists");
 
-            _mapper.Map(Request, bilan);
-            _context.Entry(bilan).State = EntityState.Modified;
+            //map the values comming as DTO class to the Model class
+
+            _mapper.Map(update, fiche);
+
+            //send the model data to be modified
+            _context.Entry(fiche).State = EntityState.Modified;
+
             await _context.SaveChangesAsync();
 
-            return NoContent();
+            //return NoContent();
+            return AcceptedAtAction(nameof(GetBilanById), new { ficheId, bilanId = Id }, fiche);
         }
 
-        // POST: api/Bilans
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost]
-        public async Task<ActionResult<Bilan_CUD>> PostBilan(Bilan_CUD request)
+        [HttpGet("{ficheId}/{bilanId}")]
+        public async Task<ActionResult<Bilan_READ>> GetBilanById(int ficheId, int bilanId)
         {
-            if (_context.Bilans == null)
+            if (_context.FicheMedicals.Find(ficheId) == null)
             {
-                return Problem("Entity set 'DiabetesOnContainersContext.Bilans'  is null.");
+                return NotFound("the Examen Medical does not exists");
             }
-            var bilan = _mapper.Map<Bilan>(request);
-            _context.Bilans.Add(bilan);
-            await _context.SaveChangesAsync();
+            var bilan = _mapper.Map<Bilan_READ>(BilanExistsUP(ficheId, bilanId).Result);
 
-            return CreatedAtAction(nameof(GetBilan), new { id = bilan.BilanId }, bilan);
-        }
-
-        // DELETE: api/Bilans/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteBilan(int id)
-        {
-            if (_context.Bilans == null)
-            {
-                return NotFound();
-            }
-            var bilan = await _context.Bilans.FindAsync(id);
             if (bilan == null)
             {
                 return NotFound();
             }
 
-            _context.Bilans.Remove(bilan);
+            return bilan;
+        }
+
+
+        [HttpPatch]
+        public async Task<IActionResult> BilanPatch(int ficheId, int Id, [FromBody] JsonPatchDocument<Bilan_READ> update)
+        {
+
+            try
+            {
+
+
+                var fiche = await _context.Bilans
+                    .Where(con => con.FicheMedId == ficheId && con.BilanId == Id)
+                    .ProjectTo<Bilan_READ>(_mapper.ConfigurationProvider)
+                    .FirstOrDefaultAsync();
+
+                if (fiche == null)
+                {
+                    return NotFound("the Param  >> " + ficheId + " <<   does not exists");
+                }
+
+                update.ApplyTo(fiche);
+
+                var value = _mapper.Map<Bilan>(fiche);
+
+                _context.Entry(value).State = EntityState.Modified;
+
+                await _context.SaveChangesAsync();
+
+                return AcceptedAtAction(nameof(GetBilanById), new { ficheId, bilanId = Id }, fiche);
+
+            }
+            catch (Exception ex)
+            {
+
+                return Content(ex.Message);
+            }
+        }
+
+        // POST: api/Bilans
+        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        [HttpPost]
+        public async Task<ActionResult<Bilan_CUD>> PostBilan(Bilan_CUD data)
+        {
+            if (_context.Bilans == null)
+            {
+                return Problem("Entity set 'DiabetesOnContainersContext.ExamainMedicals'  is null.");
+            }
+            var bilans = _mapper.Map<Bilan>(data);
+
+            _context.Bilans.Add(bilans);
+            await _context.SaveChangesAsync();
+
+            return CreatedAtAction(nameof(GetBilanById), new { ficheId = bilans.FicheMedId, bilanId = bilans.BilanId }, data);
+        }
+
+        // DELETE: api/Bilans/5
+        [HttpDelete("Delete/{ficheId}")]
+        public async Task<IActionResult> DeleteBilanByFiche(int ficheId)
+        {
+            if (_context.Bilans == null)
+            {
+                return NotFound();
+            }
+
+            var fiche = await _context.Bilans
+                .Where(con => con.FicheMedId == ficheId)
+                .ToListAsync();
+            if (fiche == null)
+            {
+                return NotFound();
+            }
+
+            _context.Bilans.RemoveRange(fiche);
             await _context.SaveChangesAsync();
 
             return NoContent();
         }
 
-        private bool BilanExists(int id)
+        [HttpPost("Delete/{ficheId}/{Id}")]
+        public async Task<IActionResult> DeleteBilanById(int ficheId, int Id)
         {
-            return (_context.Bilans?.Any(e => e.BilanId == id)).GetValueOrDefault();
+            var fiche = BilanExistsUP(ficheId, Id).Result;
+            if (fiche == null)
+            {
+                return NotFound();
+            }
+
+            _context.Bilans.Remove(fiche);
+            await _context.SaveChangesAsync();
+
+            return NoContent();
         }
+
+
+
+        private bool BilanExists(int ficheId)
+        {
+            return (_context.Bilans?.Any(e => e.FicheMedId == ficheId)).GetValueOrDefault();
+        }
+
+
+        private async Task<Bilan> BilanExistsUP(int ficheId, int bilanId)
+        {
+            var row = await _context.Bilans
+                    .FirstOrDefaultAsync(req => req.FicheMedId == ficheId && req.BilanId == bilanId);
+            return row;
+        }
+
     }
 }

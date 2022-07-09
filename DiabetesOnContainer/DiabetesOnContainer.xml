@@ -10,6 +10,9 @@
             </summary>
             <returns></returns>
         </member>
+        <member name="M:DiabetesOnContainer.Controllers.ExamainMedicalsController.ExamPatch(System.Int32,System.Int32,Microsoft.AspNetCore.JsonPatch.JsonPatchDocument{DiabetesOnContainer.DTOs.GestionPatient.ExamenMed_Patch})">
+            TODO : the patch not working
+        </member>
         <member name="M:DiabetesOnContainer.Controllers.FichePatientsController.AddQuestions(System.String,DiabetesOnContainer.DTOs.GestionPatient.Consultation_Create)">
             <summary>
                 Questions
