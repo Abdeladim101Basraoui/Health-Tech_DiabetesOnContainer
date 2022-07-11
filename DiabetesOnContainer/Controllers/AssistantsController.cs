@@ -8,8 +8,14 @@ using Microsoft.EntityFrameworkCore;
 using DiabetesOnContainer.Models;
 using AutoMapper;
 using DiabetesOnContainer.DTOs.Admin;
+using DiabetesOnContainer.DTOs.Admin.log_In_Out;
 using AutoMapper.QueryableExtensions;
 using Microsoft.AspNetCore.JsonPatch;
+using System.Security.Cryptography;
+using System.Text;
+using System.Security.Claims;
+using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
 
 namespace DiabetesOnContainer.Controllers
 {
@@ -20,11 +26,13 @@ namespace DiabetesOnContainer.Controllers
     {
         private readonly DiabetesOnContainersContext _context;
         private readonly IMapper _mapper;
+        private readonly IConfiguration _configuration;
 
-        public AssistantsController(DiabetesOnContainersContext context, IMapper mapper)
+        public AssistantsController(DiabetesOnContainersContext context, IMapper mapper,IConfiguration configuration)
         {
             _context = context;
             this._mapper = mapper;
+            this._configuration = configuration;
         }
 
 
@@ -56,8 +64,11 @@ namespace DiabetesOnContainer.Controllers
 
 
 
-
-        // GET: api/Assistants/assist1234
+        /// <summary>
+        ///  GET: api/Assistants/cin
+        /// </summary>
+        /// <param name="cin"></param>
+        /// <returns></returns>
         [HttpGet("{cin}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -99,23 +110,55 @@ namespace DiabetesOnContainer.Controllers
 
         // POST: api/Assistants
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost]
-        public async Task<ActionResult<AssistCD>> PostAssistant(AssistCD newOne)
-        {
-            if (_context.Assistants == null)
-            {
-                return Problem("Entity set 'DiabetesOnContainersContext.Assistants'  is null.");
-            }
+        //[HttpPost]
+        //public async Task<ActionResult<AssistCD>> PostAssistant(AssistCD newOne)
+        //{
+        //    if (_context.Assistants == null)
+        //    {
+        //        return Problem("Entity set 'DiabetesOnContainersContext.Assistants'  is null.");
+        //    }
 
-            var assistant = _mapper.Map<Assistant>(newOne);
-            await _context.Assistants.AddAsync(assistant);
+        //    var assistant = _mapper.Map<Assistant>(newOne);
+        //    await _context.Assistants.AddAsync(assistant);
+        //    try
+        //    {
+        //        await _context.SaveChangesAsync();
+        //    }
+        //    catch (DbUpdateException)
+        //    {
+        //        if (AssistantExists(assistant.Cin))
+        //        {
+        //            return Conflict();
+        //        }
+        //        else
+        //        {
+        //            throw;
+        //        }
+        //    }
+
+        //    return CreatedAtAction(nameof(GetAssistant), new { cin = newOne.Cin }, assistant);
+        //}
+
+        //patch api/assistant/as1234
+
+        //todo: assistant
+        [HttpPost("Register")]
+        public async Task<ActionResult> Register(AssistRegister register)
+        {
+            CreateHash(register.password, out byte[] passHash, out byte[] passSalt);
+
+            var assist = _mapper.Map<Assistant>(register);
+            assist.PasswordHash = passHash;
+            assist.PasswordSalt = passSalt;
+
+            await _context.Assistants.AddAsync(assist);
             try
             {
                 await _context.SaveChangesAsync();
             }
             catch (DbUpdateException)
             {
-                if (AssistantExists(assistant.Cin))
+                if (AssistantExists(assist.Cin))
                 {
                     return Conflict();
                 }
@@ -124,13 +167,53 @@ namespace DiabetesOnContainer.Controllers
                     throw;
                 }
             }
+            return CreatedAtAction(nameof(GetAssistant), new { cin = assist.Cin }, assist);
 
-            return CreatedAtAction(nameof(GetAssistant), new { cin = newOne.Cin }, assistant);
         }
 
-        //patch api/assistant/as1234
+
+        [HttpPost("login")]
+        public async Task<ActionResult<string>> Login(AssistLogin login)
+        {
+            var assist = await _context.Assistants.FirstOrDefaultAsync(q => q.Email == login.Email);
+            if ( assist is null)
+            {
+                return NotFound("email inserted does not exists");
+            }
+            if (!Verfypassword(login.Password, assist.PasswordHash, assist.PasswordSalt))
+            {
+                return BadRequest("the password is not valid");
+            }
+
+
+            string Token = CreateToken(assist);
+            return Ok(Token);
+        }
+
+        private string CreateToken(Assistant assist)
+        {
+            List<Claim> claims = new List<Claim>()
+            { 
+                new Claim(ClaimTypes.Name,assist.Email)
+            };
+
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration.GetSection("AppSettings:Token").Value));
+
+            var cred = new SigningCredentials(key,SecurityAlgorithms.HmacSha512Signature);
+
+            var token = new JwtSecurityToken(
+                claims:claims,
+                expires:DateTime.Now.AddHours(1),
+                signingCredentials: cred
+                );
+
+
+            var jwt = new JwtSecurityTokenHandler().WriteToken(token);
+            return jwt;
+        }
+
         [HttpPatch("{Cin}")]
-        public async Task<IActionResult> PatchAssistant(string Cin,[FromBody] JsonPatchDocument<AssistCD> update)
+        public async Task<IActionResult> PatchAssistant(string Cin, [FromBody] JsonPatchDocument<AssistCD> update)
         {
             var Assistant = AssistExistsPatch(Cin).Result;
             if (Assistant == null)
@@ -143,7 +226,7 @@ namespace DiabetesOnContainer.Controllers
             _context.Entry(value).State = EntityState.Modified;
             await _context.SaveChangesAsync();
 
-            return AcceptedAtAction(nameof(GetAssistant),new { cin=Cin},Assistant);
+            return AcceptedAtAction(nameof(GetAssistant), new { cin = Cin }, Assistant);
         }
 
         // DELETE: api/Assistants/5
@@ -176,9 +259,27 @@ namespace DiabetesOnContainer.Controllers
         {
             var row = await _context.Assistants
                         .ProjectTo<AssistCD>(_mapper.ConfigurationProvider)
-                      .FirstOrDefaultAsync(req=>req.Cin ==  cin);
+                      .FirstOrDefaultAsync(req => req.Cin == cin);
 
             return row;
         }
+        private void CreateHash(string password, out byte[] passwordHash, out byte[] passwordSalt)
+        {
+            using (var hmac = new HMACSHA512())
+            {
+                passwordSalt = hmac.Key;
+                passwordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(password));
+            }
+        }
+        private bool Verfypassword(string password, byte[] passHash, byte[] passSalt)
+        {
+            using (var hmac = new HMACSHA512(passSalt))
+            {
+                var computedHash  = hmac.ComputeHash(Encoding.UTF8.GetBytes(password));
+                return computedHash.SequenceEqual(passHash);
+            }
+        }
+
+
     }
 }

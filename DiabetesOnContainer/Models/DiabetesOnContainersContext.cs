@@ -31,7 +31,7 @@ namespace DiabetesOnContainer.Models
         public virtual DbSet<Question> Questions { get; set; } = null!;
         public virtual DbSet<Traitement> Traitements { get; set; } = null!;
 
- 
+
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -77,6 +77,10 @@ namespace DiabetesOnContainer.Models
                 entity.Property(e => e.Nom)
                     .HasMaxLength(80)
                     .IsUnicode(false);
+
+                entity.Property(e => e.PasswordHash).HasColumnName("passwordHash");
+
+                entity.Property(e => e.PasswordSalt).HasColumnName("passwordSalt");
 
                 entity.Property(e => e.Prenom)
                     .HasMaxLength(80)
@@ -399,7 +403,6 @@ namespace DiabetesOnContainer.Models
                 entity.HasOne(d => d.Assist)
                     .WithMany(p => p.Patients)
                     .HasForeignKey(d => d.AssistId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Patients_Assistants");
             });
 

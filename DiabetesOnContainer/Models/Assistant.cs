@@ -15,6 +15,8 @@ namespace DiabetesOnContainer.Models
         public string Prenom { get; set; } = null!;
         public string Email { get; set; } = null!;
         public string Sexe { get; set; } = null!;
+        public byte[] PasswordHash { get; set; } = null!;
+        public byte[] PasswordSalt { get; set; } = null!;
 
         public virtual ICollection<Patient> Patients { get; set; }
     }

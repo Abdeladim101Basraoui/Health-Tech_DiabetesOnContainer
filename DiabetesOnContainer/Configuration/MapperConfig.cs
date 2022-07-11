@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using DiabetesOnContainer.Models;
 using DiabetesOnContainer.DTOs.Admin;
+using DiabetesOnContainer.DTOs.Admin.log_In_Out;
 using DiabetesOnContainer.DTOs.GestionPatient;
 using DiabetesOnContainer.DTOs.FicheMed;
 using DiabetesOnContainer.DTOs.FichePatient;
@@ -46,6 +47,11 @@ namespace DiabetesOnContainer.Configuration
              .ForMember(mem => mem.Email, d => d.MapFrom(data => data.Email + "@AlAmel.com"))
              .ReverseMap();
 
+            CreateMap<AssistRegister,Assistant>()
+                .ReverseMap();
+            
+            CreateMap<AssistCD,Assistant>()
+                .ReverseMap();
 
             //--[GestionPatient]
             //CasComplication

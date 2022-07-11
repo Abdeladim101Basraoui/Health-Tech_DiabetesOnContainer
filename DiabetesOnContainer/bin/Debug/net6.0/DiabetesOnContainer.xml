@@ -10,6 +10,13 @@
             </summary>
             <returns></returns>
         </member>
+        <member name="M:DiabetesOnContainer.Controllers.AssistantsController.GetAssistant(System.String)">
+            <summary>
+             GET: api/Assistants/cin
+            </summary>
+            <param name="cin"></param>
+            <returns></returns>
+        </member>
         <member name="M:DiabetesOnContainer.Controllers.ExamainMedicalsController.ExamPatch(System.Int32,System.Int32,Microsoft.AspNetCore.JsonPatch.JsonPatchDocument{DiabetesOnContainer.DTOs.GestionPatient.ExamenMed_Patch})">
             TODO : the patch not working
         </member>
