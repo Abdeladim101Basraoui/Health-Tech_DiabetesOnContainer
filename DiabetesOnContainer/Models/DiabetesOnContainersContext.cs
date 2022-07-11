@@ -31,8 +31,6 @@ namespace DiabetesOnContainer.Models
         public virtual DbSet<Question> Questions { get; set; } = null!;
         public virtual DbSet<Traitement> Traitements { get; set; } = null!;
 
-
-
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Analysis>(entity =>
@@ -170,6 +168,10 @@ namespace DiabetesOnContainer.Models
                     .HasMaxLength(80)
                     .IsUnicode(false);
 
+                entity.Property(e => e.PasswordHash).HasColumnName("passwordHash");
+
+                entity.Property(e => e.PasswordSalt).HasColumnName("passwordSalt");
+
                 entity.Property(e => e.Prenom)
                     .HasMaxLength(80)
                     .IsUnicode(false);
@@ -256,7 +258,6 @@ namespace DiabetesOnContainer.Models
                     .WithMany(p => p.FicheMedicals)
                     .HasPrincipalKey(p => p.RefMed)
                     .HasForeignKey(d => d.RefMed)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_FicheMedical_Diabeticien");
             });
 
@@ -295,7 +296,6 @@ namespace DiabetesOnContainer.Models
                     .WithMany(p => p.FichePatients)
                     .HasPrincipalKey(p => p.RefMed)
                     .HasForeignKey(d => d.RefMed)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_FichePatient_Diabeticien");
 
                 entity.HasMany(d => d.Questions)

@@ -33,6 +33,13 @@ namespace DiabetesOnContainer.Configuration
                 .ForMember(mem => mem.Email, d => d.MapFrom(data => data.Email + "@AlAmel.com"))
                 .ReverseMap();
 
+
+            CreateMap<DocRegister, Diabeticien>()
+                .ReverseMap();
+
+            CreateMap<Doclogin, Diabeticien>()
+                .ReverseMap();
+
             //--[Assistant]
             CreateMap<Assistant, AssistREAD>()
                   .ForMember(full => full.FullName,

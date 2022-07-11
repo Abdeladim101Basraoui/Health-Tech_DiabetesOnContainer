@@ -268,3 +268,8 @@ C:\Users\abdom\Desktop\Health-Tech_DiabetesOnContainer\DiabetesOnContainer\bin\D
 C:\Users\abdom\Desktop\Health-Tech_DiabetesOnContainer\DiabetesOnContainer\bin\Debug\net6.0\DiabetesOnContainer.xml
 C:\Users\abdom\Desktop\Health-Tech_DiabetesOnContainer\DiabetesOnContainer\obj\Debug\net6.0\DiabetesOnContainer.genruntimeconfig.cache
 C:\Users\abdom\Desktop\Health-Tech_DiabetesOnContainer\DiabetesOnContainer\obj\Debug\net6.0\ref\DiabetesOnContainer.dll
+C:\Users\abdom\Desktop\Health-Tech_DiabetesOnContainer\DiabetesOnContainer\bin\Debug\net6.0\Microsoft.AspNetCore.Authentication.JwtBearer.dll
+C:\Users\abdom\Desktop\Health-Tech_DiabetesOnContainer\DiabetesOnContainer\bin\Debug\net6.0\Microsoft.Extensions.DependencyModel.dll
+C:\Users\abdom\Desktop\Health-Tech_DiabetesOnContainer\DiabetesOnContainer\bin\Debug\net6.0\Scrutor.dll
+C:\Users\abdom\Desktop\Health-Tech_DiabetesOnContainer\DiabetesOnContainer\bin\Debug\net6.0\Swashbuckle.AspNetCore.Filters.dll
+C:\Users\abdom\Desktop\Health-Tech_DiabetesOnContainer\DiabetesOnContainer\bin\Debug\net6.0\Swashbuckle.AspNetCore.Filters.Abstractions.dll

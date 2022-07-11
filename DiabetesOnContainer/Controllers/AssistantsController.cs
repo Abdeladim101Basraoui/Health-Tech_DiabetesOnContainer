@@ -16,12 +16,14 @@ using System.Text;
 using System.Security.Claims;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
+using Microsoft.AspNetCore.Authorization;
 
 namespace DiabetesOnContainer.Controllers
 {
     [Route("api/admin/[controller]")]
 
     [ApiController]
+    [Authorize(Roles = "Doc")]
     public class AssistantsController : ControllerBase
     {
         private readonly DiabetesOnContainersContext _context;
@@ -42,6 +44,7 @@ namespace DiabetesOnContainer.Controllers
         /// <returns></returns>
         // GET: api/Assistants
         [HttpGet]
+
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<IEnumerable<AssistREAD>>> GetAssistants()
@@ -143,6 +146,7 @@ namespace DiabetesOnContainer.Controllers
 
         //todo: assistant
         [HttpPost("Register")]
+        [AllowAnonymous]
         public async Task<ActionResult> Register(AssistRegister register)
         {
             CreateHash(register.password, out byte[] passHash, out byte[] passSalt);
@@ -158,7 +162,7 @@ namespace DiabetesOnContainer.Controllers
             }
             catch (DbUpdateException)
             {
-                if (AssistantExists(assist.Cin))
+                if (!AssistantExists(assist.Cin))
                 {
                     return Conflict();
                 }
@@ -167,12 +171,13 @@ namespace DiabetesOnContainer.Controllers
                     throw;
                 }
             }
-            return CreatedAtAction(nameof(GetAssistant), new { cin = assist.Cin }, assist);
+            return CreatedAtAction(nameof(GetAssistant), new { cin = assist.Cin }, _mapper.Map<AssistREAD>(assist));
 
         }
 
 
         [HttpPost("login")]
+        [AllowAnonymous]
         public async Task<ActionResult<string>> Login(AssistLogin login)
         {
             var assist = await _context.Assistants.FirstOrDefaultAsync(q => q.Email == login.Email);
@@ -186,31 +191,10 @@ namespace DiabetesOnContainer.Controllers
             }
 
 
-            string Token = CreateToken(assist);
+            string Token = CreateToken(assist.Email);
             return Ok(Token);
         }
 
-        private string CreateToken(Assistant assist)
-        {
-            List<Claim> claims = new List<Claim>()
-            { 
-                new Claim(ClaimTypes.Name,assist.Email)
-            };
-
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration.GetSection("AppSettings:Token").Value));
-
-            var cred = new SigningCredentials(key,SecurityAlgorithms.HmacSha512Signature);
-
-            var token = new JwtSecurityToken(
-                claims:claims,
-                expires:DateTime.Now.AddHours(1),
-                signingCredentials: cred
-                );
-
-
-            var jwt = new JwtSecurityTokenHandler().WriteToken(token);
-            return jwt;
-        }
 
         [HttpPatch("{Cin}")]
         public async Task<IActionResult> PatchAssistant(string Cin, [FromBody] JsonPatchDocument<AssistCD> update)
@@ -222,7 +206,6 @@ namespace DiabetesOnContainer.Controllers
             }
             update.ApplyTo(Assistant);
             var value = _mapper.Map<Assistant>(Assistant);
-
             _context.Entry(value).State = EntityState.Modified;
             await _context.SaveChangesAsync();
 
@@ -233,15 +216,18 @@ namespace DiabetesOnContainer.Controllers
         [HttpDelete("{cin}")]
         public async Task<IActionResult> DeleteAssistant(string cin)
         {
-            if (_context.Assistants == null)
+            var assistant = await _context.Assistants
+                .Include(f=>f.Patients)
+                .FirstOrDefaultAsync(req=>req.Cin == cin);
+            if (assistant == null || _context.Assistants == null)
             {
                 return NotFound();
             }
-            var assistant = await _context.Assistants.FindAsync(cin);
-            if (assistant == null)
+            foreach (var pat in assistant.Patients)
             {
-                return NotFound();
+                pat.AssistId = null;
             }
+            await _context.SaveChangesAsync();
 
             _context.Assistants.Remove(assistant);
             await _context.SaveChangesAsync();
@@ -270,6 +256,28 @@ namespace DiabetesOnContainer.Controllers
                 passwordSalt = hmac.Key;
                 passwordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(password));
             }
+        }
+        private string CreateToken(string email)
+        {
+            List<Claim> claims = new List<Claim>()
+            { 
+                new Claim(ClaimTypes.Name,email),
+                new Claim(ClaimTypes.Role,"Assist")
+            };
+
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration.GetSection("AppSettings:Token").Value));
+
+            var cred = new SigningCredentials(key,SecurityAlgorithms.HmacSha512Signature);
+
+            var token = new JwtSecurityToken(
+                claims:claims,
+                expires:DateTime.Now.AddHours(1),
+                signingCredentials: cred
+                );
+
+
+            var jwt = new JwtSecurityTokenHandler().WriteToken(token);
+            return jwt;
         }
         private bool Verfypassword(string password, byte[] passHash, byte[] passSalt)
         {

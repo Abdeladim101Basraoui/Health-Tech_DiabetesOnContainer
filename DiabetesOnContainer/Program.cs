@@ -1,7 +1,12 @@
 using DiabetesOnContainer.Configuration;
 using DiabetesOnContainer.Models;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using System.Reflection;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
+using Microsoft.OpenApi.Models;
+using Swashbuckle.AspNetCore.Filters;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -42,8 +47,36 @@ builder.Services.AddSwaggerGen(
         var xmlpath = Path.Combine(AppContext.BaseDirectory, xmlfile);
 
         options.IncludeXmlComments(xmlpath);
-    })  
+
+        options.AddSecurityDefinition("oauth2", new OpenApiSecurityScheme
+        {
+            Description = "Standard Authorisation using the Bearer Scheme (\"{bearer {token}})",
+            In = ParameterLocation.Header,
+            Name = "Authorization",
+            Type = SecuritySchemeType.ApiKey
+        });
+
+        options.OperationFilter<SecurityRequirementsOperationFilter>();
+    })
             .AddSwaggerGenNewtonsoftSupport();
+
+
+builder.Services.AddAuthentication(
+    JwtBearerDefaults.AuthenticationScheme)
+        .AddJwtBearer(options =>
+        {
+            options.TokenValidationParameters = new TokenValidationParameters
+            {
+                ValidateIssuerSigningKey = true,
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes
+            (builder.Configuration.GetSection("AppSettings:Token").Value))
+            ,
+                ValidateIssuer = false,
+                ValidateAudience = false
+
+            };
+
+        });
 
 var app = builder.Build();
 
@@ -64,6 +97,7 @@ app.UseHttpsRedirection();
 //ADD midlleware of cors
 app.UseCors("AllowAll");
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
