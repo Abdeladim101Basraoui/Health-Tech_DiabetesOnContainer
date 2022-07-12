@@ -7,6 +7,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.Filters;
+using DiabetesOnContainer.Services.DocService;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -33,6 +34,12 @@ builder.Services.AddCors(options =>
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
+
+
+builder.Services.AddScoped<IRefreshToken, RefreshTokenDTO>();
+
+//for injecting the IHTTP context service the Service DTO
+builder.Services.AddHttpContextAccessor();
 
 builder.Services.AddSwaggerGen(
        options =>

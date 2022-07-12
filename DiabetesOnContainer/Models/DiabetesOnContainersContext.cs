@@ -29,6 +29,7 @@ namespace DiabetesOnContainer.Models
         public virtual DbSet<ParamsBio> ParamsBios { get; set; } = null!;
         public virtual DbSet<Patient> Patients { get; set; } = null!;
         public virtual DbSet<Question> Questions { get; set; } = null!;
+        public virtual DbSet<RefreshToken> RefreshTokens { get; set; } = null!;
         public virtual DbSet<Traitement> Traitements { get; set; } = null!;
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -417,6 +418,19 @@ namespace DiabetesOnContainer.Models
                 entity.Property(e => e.MedecinNotes).IsUnicode(false);
 
                 entity.Property(e => e.Question1).HasColumnName("Question");
+            });
+
+            modelBuilder.Entity<RefreshToken>(entity =>
+            {
+                entity.ToTable("RefreshToken");
+
+                entity.Property(e => e.Id).HasDefaultValueSql("(newid())");
+
+                entity.Property(e => e.Created).HasColumnType("date");
+
+                entity.Property(e => e.Expires).HasColumnType("date");
+
+                entity.Property(e => e.Role).HasMaxLength(20);
             });
 
             modelBuilder.Entity<Traitement>(entity =>

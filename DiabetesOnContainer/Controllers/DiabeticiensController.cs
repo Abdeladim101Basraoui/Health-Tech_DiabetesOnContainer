@@ -29,7 +29,7 @@ namespace DiabetesOnContainer.Controllers
         private readonly IMapper _mapper;
         private readonly IConfiguration _configuration;
 
-        public DiabeticiensController(DiabetesOnContainersContext context, IMapper mapper,IConfiguration configuration)
+        public DiabeticiensController(DiabetesOnContainersContext context, IMapper mapper, IConfiguration configuration)
         {
             _context = context;
             this._mapper = mapper;
@@ -107,6 +107,63 @@ namespace DiabetesOnContainer.Controllers
 
 
 
+        //patch api/assistant/as1234
+        [HttpPatch("{Cin}")]
+        public async Task<IActionResult> PatchDiabeticien(string Cin, [FromBody] JsonPatchDocument<DiabeticienCD> update)
+        {
+            var doc = AssistExistsPatch(Cin).Result;
+            if (doc == null)
+            {
+                return NotFound("the cin does not exists in the table");
+            }
+            update.ApplyTo(doc);
+            var value = _mapper.Map<Diabeticien>(doc);
+
+            _context.Entry(value).State = EntityState.Modified;
+            await _context.SaveChangesAsync();
+
+            return AcceptedAtAction(nameof(GetDiabeticien), new { cin = Cin }, doc);
+        }
+
+
+        // DELETE: api/Diabeticiens/5
+        [HttpDelete("{cin}")]
+        public async Task<IActionResult> DeleteDiabeticien(string cin)
+        {
+
+            var doc = await _context.Diabeticiens
+                .Include(fk => fk.FichePatients)
+                .Include(fk => fk.FicheMedicals)
+                .FirstOrDefaultAsync(q => q.Cin == cin);
+
+
+
+
+            if (doc == null || _context.Diabeticiens == null)
+            {
+                return NotFound();
+            }
+
+            foreach (var fichepat in doc.FichePatients)
+            {
+                fichepat.RefMed = null;
+            }
+
+
+
+            foreach (var med in doc.FicheMedicals)
+            {
+                med.RefMed = null;
+            }
+
+            _context.Diabeticiens.Remove(doc);
+            await _context.SaveChangesAsync();
+
+            return NoContent();
+        }
+
+
+
         // POST: api/Diabeticiens
         [AllowAnonymous]
         [HttpPost("Register")]
@@ -123,6 +180,7 @@ namespace DiabetesOnContainer.Controllers
             {
                 await _context.SaveChangesAsync();
             }
+
             catch (DbUpdateException)
             {
                 if (!DiabeticienExists(doc.Cin))
@@ -158,63 +216,23 @@ namespace DiabetesOnContainer.Controllers
             return Ok(Token);
         }
 
+        //[HttpPost("Refresh-token")]
+        //public async Task<ActionResult<string>> RefreshToken()
+        //{
+        //    var refresh = Request.Cookies["RefreshToken"];
 
+        //    var val = _context.RefreshTokens.FirstOrDefault(q => q.Token == refresh);
+        //    if (val is null)
+        //    {
+        //        return Unauthorized("invalide refresh token");
+        //    }
+        //    if (val.Expires<DateTime.Now)
+        //    {
+        //        return Unauthorized("Token Expired");
+        //    }
 
-
-        //patch api/assistant/as1234
-        [HttpPatch("{Cin}")]
-        public async Task<IActionResult> PatchDiabeticien(string Cin, [FromBody] JsonPatchDocument<DiabeticienCD> update)
-        {
-            var doc = AssistExistsPatch(Cin).Result;
-            if (doc == null)
-            {
-                return NotFound("the cin does not exists in the table");
-            }
-            update.ApplyTo(doc);
-            var value = _mapper.Map<Diabeticien>(doc);
-
-            _context.Entry(value).State = EntityState.Modified;
-            await _context.SaveChangesAsync();
-
-            return AcceptedAtAction(nameof(GetDiabeticien), new { cin = Cin }, doc);
-        }
-
-
-        // DELETE: api/Diabeticiens/5
-        [HttpDelete("{cin}")]
-        public async Task<IActionResult> DeleteDiabeticien(string cin)
-        {
-           
-            var doc = await _context.Diabeticiens
-                .Include(fk=>fk.FichePatients)
-                .Include(fk=>fk.FicheMedicals)
-                .FirstOrDefaultAsync(q=>q.Cin == cin);
-
-
-
-
-            if (doc == null|| _context.Diabeticiens == null)
-            {
-                return NotFound();
-            }
-
-            foreach (var fichepat in doc.FichePatients)
-            {
-                fichepat.RefMed = null;
-            }
-
-
-
-            foreach (var med in doc.FicheMedicals)
-            {
-                med.RefMed = null;
-            }
-
-            _context.Diabeticiens.Remove(doc);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
-        }
+        //    string token = CreateToken(val.e)
+        //}
 
 
         private void CreateHash(string password, out byte[] passwordHash, out byte[] passwordSalt)
@@ -245,8 +263,26 @@ namespace DiabetesOnContainer.Controllers
 
 
             var jwt = new JwtSecurityTokenHandler().WriteToken(token);
+            //Refresh Token
+            var RefreshToken = GenerateRefreshToken(claims[1].Value);
+            SetRefreshToken(RefreshToken);
             return jwt;
         }
+
+        private RefreshToken GenerateRefreshToken(string Role)
+        {
+            var refreshtoken = new RefreshToken()
+            {
+                Token = Convert.ToBase64String(RandomNumberGenerator.GetBytes(64)),
+                Expires = DateTime.Now.AddHours(2),
+                Created = DateTime.Now,
+                Role = Role
+            };
+            return refreshtoken;
+
+        }
+
+
         private bool Verfypassword(string password, byte[] passHash, byte[] passSalt)
         {
             using (var hmac = new HMACSHA512(passSalt))
@@ -254,6 +290,25 @@ namespace DiabetesOnContainer.Controllers
                 var computedHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(password));
                 return computedHash.SequenceEqual(passHash);
             }
+        }
+
+
+
+        private void SetRefreshToken(RefreshToken refreshToken)
+        {
+            var cookiesOptions = new CookieOptions
+            {
+                HttpOnly = true,
+                Expires = refreshToken.Expires
+            };
+
+            Response.Cookies.Append("RefreshToken", refreshToken.Token, cookiesOptions);
+
+            refreshToken.Id = Guid.NewGuid();
+            _context.RefreshTokens.Add(refreshToken);
+            _context.SaveChanges();
+
+
         }
 
         private bool DiabeticienExists(string cin)

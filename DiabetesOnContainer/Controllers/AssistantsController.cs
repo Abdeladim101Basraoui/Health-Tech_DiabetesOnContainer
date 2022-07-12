@@ -30,7 +30,7 @@ namespace DiabetesOnContainer.Controllers
         private readonly IMapper _mapper;
         private readonly IConfiguration _configuration;
 
-        public AssistantsController(DiabetesOnContainersContext context, IMapper mapper,IConfiguration configuration)
+        public AssistantsController(DiabetesOnContainersContext context, IMapper mapper, IConfiguration configuration)
         {
             _context = context;
             this._mapper = mapper;
@@ -154,7 +154,6 @@ namespace DiabetesOnContainer.Controllers
             var assist = _mapper.Map<Assistant>(register);
             assist.PasswordHash = passHash;
             assist.PasswordSalt = passSalt;
-
             await _context.Assistants.AddAsync(assist);
             try
             {
@@ -181,7 +180,7 @@ namespace DiabetesOnContainer.Controllers
         public async Task<ActionResult<string>> Login(AssistLogin login)
         {
             var assist = await _context.Assistants.FirstOrDefaultAsync(q => q.Email == login.Email);
-            if ( assist is null)
+            if (assist is null)
             {
                 return NotFound("email inserted does not exists");
             }
@@ -191,9 +190,12 @@ namespace DiabetesOnContainer.Controllers
             }
 
 
-            string Token = CreateToken(assist.Email);
+            string Token =  CreateToken(assist.Email);
             return Ok(Token);
         }
+
+
+
 
 
         [HttpPatch("{Cin}")]
@@ -217,8 +219,8 @@ namespace DiabetesOnContainer.Controllers
         public async Task<IActionResult> DeleteAssistant(string cin)
         {
             var assistant = await _context.Assistants
-                .Include(f=>f.Patients)
-                .FirstOrDefaultAsync(req=>req.Cin == cin);
+                .Include(f => f.Patients)
+                .FirstOrDefaultAsync(req => req.Cin == cin);
             if (assistant == null || _context.Assistants == null)
             {
                 return NotFound();
@@ -260,30 +262,67 @@ namespace DiabetesOnContainer.Controllers
         private string CreateToken(string email)
         {
             List<Claim> claims = new List<Claim>()
-            { 
+            {
                 new Claim(ClaimTypes.Name,email),
                 new Claim(ClaimTypes.Role,"Assist")
             };
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration.GetSection("AppSettings:Token").Value));
 
-            var cred = new SigningCredentials(key,SecurityAlgorithms.HmacSha512Signature);
+            var cred = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);
 
             var token = new JwtSecurityToken(
-                claims:claims,
-                expires:DateTime.Now.AddHours(1),
+                claims: claims,
+                expires: DateTime.Now.AddHours(1),
                 signingCredentials: cred
                 );
 
 
             var jwt = new JwtSecurityTokenHandler().WriteToken(token);
+
+
+            //Refresh Token
+            var RefreshToken = GenerateRefreshToken(claims[1].Value);
+            SetRefreshToken(RefreshToken);
             return jwt;
         }
+
+        private RefreshToken GenerateRefreshToken(string Role)
+        {
+            var refreshtoken = new RefreshToken()
+            {
+                Token = Convert.ToBase64String(RandomNumberGenerator.GetBytes(64)),
+                Expires = DateTime.Now.AddHours(2),
+                Created = DateTime.Now,
+                Role = Role
+            };
+            return refreshtoken;
+
+        }
+        
+        private void SetRefreshToken(RefreshToken refreshToken)
+        {
+            var cookiesOptions = new CookieOptions
+            {
+                HttpOnly = true,
+                Expires = refreshToken.Expires
+            };
+
+            Response.Cookies.Append("RefreshToken",refreshToken.Token,cookiesOptions);
+
+            refreshToken.Id = Guid.NewGuid();
+            _context.RefreshTokens.Add(refreshToken);
+            _context.SaveChanges();
+        
+        }
+
+
+
         private bool Verfypassword(string password, byte[] passHash, byte[] passSalt)
         {
             using (var hmac = new HMACSHA512(passSalt))
             {
-                var computedHash  = hmac.ComputeHash(Encoding.UTF8.GetBytes(password));
+                var computedHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(password));
                 return computedHash.SequenceEqual(passHash);
             }
         }
