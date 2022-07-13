@@ -1,8 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations;
-namespace DiabetesOnContainer.DTOs.FichePatient
+namespace DiabetesOnContainer.DTOs.GestionPatient
 {
     public class Consultation_Read:Consultation_Create
     {
-        public string QuestionIS { get; set; } = String.Empty;
+        public ICollection<Question_READ> Questions{ get; set; }
     }
 }

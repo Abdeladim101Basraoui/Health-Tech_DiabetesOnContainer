@@ -10,11 +10,13 @@ using AutoMapper;
 using DiabetesOnContainer.DTOs.FichePatient;
 using AutoMapper.QueryableExtensions;
 using Microsoft.AspNetCore.JsonPatch;
+using Microsoft.AspNetCore.Authorization;
 
 namespace DiabetesOnContainer.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(Roles = "Doc,Assist")]
     public class HistoriquesController : ControllerBase
     {
         private readonly DiabetesOnContainersContext _context;
@@ -105,15 +107,15 @@ namespace DiabetesOnContainer.Controllers
 
         // POST: api/CasComplications
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost("{cin}")]
-        public async Task<ActionResult<Historique_CUD>> PostHistorique(string cin, Historique_CUD update)
+        [HttpPost("Add/")]
+        public async Task<ActionResult<Historique_CUD>> PostHistorique( Historique_CUD update)
         {
             if (_context.Historiques == null)
             {
                 return Problem("Entity set 'DiabetesOnContainersContext.CasComplications'  is null.");
             }
 
-            if (update == null || update.PatientId != cin)
+            if (update == null || update.PatientId != update.PatientId)
             {
                 return BadRequest("check the values send");
             }
@@ -153,6 +155,7 @@ namespace DiabetesOnContainer.Controllers
                 {
                     return NotFound("the cin does not exists in the table");
                 }
+
                 update.ApplyTo(historique);
                 var value = _mapper.Map<Historique>(historique);
 
@@ -173,7 +176,7 @@ namespace DiabetesOnContainer.Controllers
 
 
         // DELETE: api/historique/pt12345
-        [HttpDelete("{Cin}")]
+        [HttpDelete("delete/{Cin}")]
         public async Task<IActionResult> DeleteHistoriqueByCIN(string Cin)
         {
             if (_context.Historiques == null)
@@ -198,7 +201,7 @@ namespace DiabetesOnContainer.Controllers
 
         //this delete action method is not Idempotent for this reson I will change the status verb to Post to follow the respt Spec
         // DELETE: api/historique/pt1234/5
-        [HttpPost("/delete/{Cin}/{PresId}")]
+        [HttpPost("delete/{Cin}/{PresId}")]
         public async Task<IActionResult> DeleteHistoriqueByID(string Cin, int PresId)
         {
             var historique = HistoriqueExistsUP(PresId, Cin).Result;

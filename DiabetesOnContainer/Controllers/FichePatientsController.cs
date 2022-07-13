@@ -10,11 +10,13 @@ using DiabetesOnContainer.DTOs.GestionPatient;
 using AutoMapper.QueryableExtensions;
 using AutoMapper;
 using Microsoft.AspNetCore.JsonPatch;
+using Microsoft.AspNetCore.Authorization;
 
 namespace DiabetesOnContainer.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(Roles = "Doc,Assist")]
     public class FichePatientsController : ControllerBase
     {
         private readonly DiabetesOnContainersContext _context;
@@ -35,8 +37,7 @@ namespace DiabetesOnContainer.Controllers
                 return NotFound();
             }
             return await _context.FichePatients
-                .Include(con => con.Consultations)
-                .ThenInclude(fk => fk.Question)
+                .Include(con => con.Questions)
                 .Include(fk => fk.ExamainMedicals)
                 .ProjectTo<FichePatient_Read>(_mapper.ConfigurationProvider)
                 .ToListAsync();
@@ -46,17 +47,16 @@ namespace DiabetesOnContainer.Controllers
         [HttpGet("{cin}")]
         public async Task<ActionResult<IEnumerable<FichePatient_Read>>> GetFichePatientByCIN(string cin)
         {
-            if (_context.FichePatients == null || _context.Patients.Find(cin) == null)
+            if (_context.FichePatients == null )
             {
-                return NotFound("the aptient does not exists");
+                return NotFound("the table is EMPTY");
             }
 
-            else if (!FichePatientExists(cin)) return NotFound("ce patient n'a aucun historique");
+            if (!FichePatientExists(cin)) return NotFound("ce patient n'a aucun historique");
             return await _context.FichePatients
-                .Include(con => con.Consultations)
-                .ThenInclude(fk => fk.Question)
-                .Include(fk => fk.ExamainMedicals)
                 .Where(fk => fk.Cin == cin)
+                .Include(con => con.Questions)
+                .Include(fk => fk.ExamainMedicals)
                 .ProjectTo<FichePatient_Read>(_mapper.ConfigurationProvider)
                 .ToListAsync();
         }
@@ -65,15 +65,16 @@ namespace DiabetesOnContainer.Controllers
         [HttpGet("{cin}/{PrescriptionID}")]
         public async Task<ActionResult<FichePatient_Read>> GetFichePatientByID(string cin, int PrescriptionID)
         {
-            if (_context.FichePatients == null || _context.Patients.Find(cin) == null)
+            if (_context.FichePatients == null)
             {
-                return NotFound("the patient does not exists");
+                return NotFound("the table is EMPTY");
             }
+
+            if (!FichePatientExists(cin)) return NotFound("ce patient n'a aucun historique");
             var fichePatient = await _context.FichePatients
-                .Include(con => con.Consultations)
-                .ThenInclude(fk => fk.Question)
-                .Include(fk => fk.ExamainMedicals)
                 .Where(fk => fk.Cin == cin && fk.PrescriptionId == PrescriptionID)
+                 .Include(con => con.Questions)
+                .Include(fk => fk.ExamainMedicals)
                 .ProjectTo<FichePatient_Read>(_mapper.ConfigurationProvider)
                 .FirstOrDefaultAsync();
 
@@ -111,19 +112,19 @@ namespace DiabetesOnContainer.Controllers
         }
 
         //Patch: api/FichePatients/5/12
-        [HttpPatch("/{Cin}/{PreId}")]
+        [HttpPatch("{Cin}/{PreId}")]
         public async Task<IActionResult> PatchFilePatient(string Cin, int PreId, [FromBody] JsonPatchDocument<FichePatient_Patch> update)
         {
 
             try
             {
 
-                if (_context.Patients.Find(Cin) == null)
-                {
-                    return NotFound("the patient does not exist");
-                }
+                //    if (_context.Patients.Find(Cin) == null)
+                //    {
+                //        return NotFound("the patient does not exist");
+                //    }
 
-                var fiche = FicheExistsPatch(Cin, PreId).Result;
+                var fiche = _mapper.Map<FichePatient_Patch>(FichePatientExistsUP( PreId, Cin).Result);
 
                 if (fiche == null)
                 {
@@ -185,7 +186,7 @@ namespace DiabetesOnContainer.Controllers
         }
 
         // DELETE: api/FichePatients/5
-        [HttpDelete("{Cin}/{PresId}")]
+        [HttpPost("{Cin}/{PresId}")]
         public async Task<IActionResult> DeleteFichePatientByID(string Cin, int PresId)
         {
             var fichePatient = FichePatientExistsUP(PresId, Cin).Result;
@@ -200,11 +201,74 @@ namespace DiabetesOnContainer.Controllers
             return NoContent();
         }
 
+        /// <summary>
+        ///     Questions
+        /// </summary>
+        /// <param name="Id"></param>
+        /// <param name="Cin"></param>
+        /// <returns></returns>
+        [HttpPost("Add/Q/{Cin}")]
+        public async Task<ActionResult<FichePatient_Read>> AddQuestions(string Cin, Consultation_Create  question)
+        {
+            var fiche = FichePatientExistsUP(question.PrescriptionId,Cin).Result ;
+            if (fiche == null)
+                return NotFound("la fiche n'existe pas");
+
+            var Q = await _context.Questions.FindAsync(question.QuestionId);
+            if (Q == null)
+                return NotFound("la Question n'existe pas");
+
+            fiche.Questions.Add(Q);
+            await _context.SaveChangesAsync();
+
+           return  CreatedAtAction(nameof(GetFichePatientByID), new { cin = Cin, PrescriptionID = question.PrescriptionId }, _mapper.Map<FichePatient_Read>(fiche));
+        }
+
+        /// <summary>
+        /// add new question not exists in the questions table
+        /// </summary>
+        /// <param name="Cin"></param>
+        /// <param name="question"></param>
+        /// <returns></returns>
+        [HttpPost("Add/Q/{Cin}/PresId")]
+        public async Task<ActionResult<FichePatient_Read>> AddQuestions(string Cin, int PresId, Question_CUD question)
+        {
+            var fiche = FichePatientExistsUP(PresId, Cin).Result;
+            if (fiche == null)
+                return NotFound("la fiche n'existe pas");
+
+            var Q = _mapper.Map<Question>(question);
+            if (Q == null)
+                return NotFound("la Question n'existe pas");
+
+            fiche.Questions.Add(Q);
+            await _context.SaveChangesAsync();
+
+            return CreatedAtAction(nameof(GetFichePatientByID), new { cin = Cin, PrescriptionID = PresId }, _mapper.Map<FichePatient_Read>(fiche));
+        }
+
+        [HttpDelete("Delete/Q/{cin}")]
+        public async Task<ActionResult> DeleteQuestion(string cin,Consultation_Create question)
+        {
+            var consult = FichePatientExistsUP(question.PrescriptionId,cin).Result;
+
+            var Q = await _context.Questions.FindAsync(question.QuestionId);
+            if (consult == null || Q==null)
+            {
+                return NotFound("the Question does not exists in the current consultation");
+            }
+
+            consult.Questions.Remove(Q);
+            await _context.SaveChangesAsync();
+
+            return NoContent();
+        }
+
+
         private async Task<FichePatient> FichePatientExistsUP(int Id, string Cin)
         {
             var row = await _context.FichePatients
-                    .Include(con => con.Consultations)
-                    .ThenInclude(fk => fk.Question)
+                 .Include(  con => con.Questions)
                     .FirstOrDefaultAsync(req => req.Cin == Cin && req.PrescriptionId == Id);
             return row;
         }
@@ -213,16 +277,15 @@ namespace DiabetesOnContainer.Controllers
             return _context.FichePatients?.Any(e => e.Cin == cin) is not null;
         }
 
-        private async Task<FichePatient_Patch> FicheExistsPatch(string cin, int FichId)
-        {
-            var row = await _context.FichePatients
-                        //.Include(fk => fk.Consultations)
-                        //.ThenInclude(fk=>fk.Question)
-                        .Where(con => con.Cin == cin && con.PrescriptionId == FichId)
-                        .ProjectTo<FichePatient_Patch>(_mapper.ConfigurationProvider)
-                      .FirstOrDefaultAsync();
+        //private async Task<FichePatient_Patch> FicheExistsPatch(string cin, int FichId)
+        //{
+        //    var row = await _context.FichePatients
+        //                   .Include(con => con.Questions)
+        //                .Where(con => con.Cin == cin && con.PrescriptionId == FichId)
+        //                .ProjectTo<FichePatient_Patch>(_mapper.ConfigurationProvider)
+        //              .FirstOrDefaultAsync();
 
-            return row;
-        }
+        //    return row;
+        //}
     }
 }

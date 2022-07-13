@@ -2,19 +2,20 @@
 
 namespace DiabetesOnContainer.DTOs.FicheMed
 {
-    public class Bilan_CUD
+    public class Analysis_CUD
     {
         [Required]
-        public string NomBilan { get; set; } = null!;
+        public string NomAnalyse { get; set; } = null!;
         [Required]
-        public string ResulatBilan { get; set; } = null!;
+        public string ResulatAnalyse { get; set; } = null!;
         
         [Required]
         public string NoteMedecin { get; set; } = null!;
-        public byte[]? BilanImage { get; set; }
-      
+        public byte[]? AnalyseImage { get; set; }
+
         [Required]
         public int FicheMedId { get; set; }
+
         [Required]
         public DateTime DateEnvoi { get; set; }=DateTime.Now;
     }

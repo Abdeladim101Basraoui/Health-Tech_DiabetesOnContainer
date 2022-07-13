@@ -10,20 +10,30 @@ using DiabetesOnContainer.DTOs.Admin;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using Microsoft.AspNetCore.JsonPatch;
+using DiabetesOnContainer.DTOs.Admin.log_In_Out;
+using System.Security.Cryptography;
+using System.Text;
+using System.Security.Claims;
+using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
+using Microsoft.AspNetCore.Authorization;
 
 namespace DiabetesOnContainer.Controllers
 {
     [Route("api/admin/[controller]")]
     [ApiController]
+    [Authorize(Roles = "Doc")]
     public class DiabeticiensController : ControllerBase
     {
         private readonly DiabetesOnContainersContext _context;
         private readonly IMapper _mapper;
+        private readonly IConfiguration _configuration;
 
-        public DiabeticiensController(DiabetesOnContainersContext context, IMapper mapper)
+        public DiabeticiensController(DiabetesOnContainersContext context, IMapper mapper, IConfiguration configuration)
         {
             _context = context;
             this._mapper = mapper;
+            this._configuration = configuration;
         }
 
 
@@ -97,39 +107,6 @@ namespace DiabetesOnContainer.Controllers
 
 
 
-        // POST: api/Diabeticiens
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost]
-        public async Task<ActionResult<DiabeticienCD>> PostDiabeticien(DiabeticienCD diabeticien)
-        {
-
-            if (_context.Diabeticiens == null)
-            {
-                return Problem("Entity set 'DiabetesOnContainersContext.Diabeticiens'  is null.");
-            }
-
-            var Dupdate = _mapper.Map<Diabeticien>(diabeticien);
-
-            await _context.Diabeticiens.AddAsync(Dupdate);
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateException)
-            {
-                if (DiabeticienExists(diabeticien.Cin))
-                {
-                    return Conflict();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return CreatedAtAction(nameof(GetDiabeticien), new { cin = diabeticien.Cin }, diabeticien);
-        }
-
         //patch api/assistant/as1234
         [HttpPatch("{Cin}")]
         public async Task<IActionResult> PatchDiabeticien(string Cin, [FromBody] JsonPatchDocument<DiabeticienCD> update)
@@ -153,20 +130,189 @@ namespace DiabetesOnContainer.Controllers
         [HttpDelete("{cin}")]
         public async Task<IActionResult> DeleteDiabeticien(string cin)
         {
-            if (_context.Diabeticiens == null)
-            {
-                return NotFound();
-            }
-            var diabeticien = await _context.Diabeticiens.FindAsync(cin);
-            if (diabeticien == null)
+
+            var doc = await _context.Diabeticiens
+                .Include(fk => fk.FichePatients)
+                .Include(fk => fk.FicheMedicals)
+                .FirstOrDefaultAsync(q => q.Cin == cin);
+
+
+
+
+            if (doc == null || _context.Diabeticiens == null)
             {
                 return NotFound();
             }
 
-            _context.Diabeticiens.Remove(diabeticien);
+            foreach (var fichepat in doc.FichePatients)
+            {
+                fichepat.RefMed = null;
+            }
+
+
+
+            foreach (var med in doc.FicheMedicals)
+            {
+                med.RefMed = null;
+            }
+
+            _context.Diabeticiens.Remove(doc);
             await _context.SaveChangesAsync();
 
             return NoContent();
+        }
+
+
+
+        // POST: api/Diabeticiens
+        [AllowAnonymous]
+        [HttpPost("Register")]
+        public async Task<ActionResult> Register(DocRegister register)
+        {
+            if (_context.Diabeticiens.FirstOrDefault(q=>q.Email == register.Email) is not null)
+            {
+                return BadRequest("this email is already exists try to loging or use an other one to register");
+            }
+            CreateHash(register.password, out byte[] passHash, out byte[] passSalt);
+
+            var doc = _mapper.Map<Diabeticien>(register);
+            doc.PasswordHash = passHash;
+            doc.PasswordSalt = passSalt;
+
+            await _context.Diabeticiens.AddAsync(doc);
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+
+            catch (DbUpdateException)
+            {
+                if (!DiabeticienExists(doc.Cin))
+                {
+                    return Conflict();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+            return CreatedAtAction(nameof(GetDiabeticien), new { cin = doc.Cin }, _mapper.Map<DiabeticienREAD>(doc));
+
+        }
+
+
+        [HttpPost("login")]
+        [AllowAnonymous]
+        public async Task<ActionResult<string>> Login(Doclogin login)
+        {
+            var doc = await _context.Diabeticiens.FirstOrDefaultAsync(q => q.Email == login.Email);
+            if (doc is null)
+            {
+                return NotFound("email inserted does not exists");
+            }
+            if (!Verfypassword(login.Password, doc.PasswordHash, doc.PasswordSalt))
+            {
+                return BadRequest("the password is not valid");
+            }
+
+
+            string Token = CreateToken(doc.Email);
+            return Ok(Token);
+        }
+
+        //[HttpPost("Refresh-token")]
+        //public async Task<ActionResult<string>> RefreshToken()
+        //{
+        //    var refresh = Request.Cookies["RefreshToken"];
+
+        //    var val = _context.RefreshTokens.FirstOrDefault(q => q.Token == refresh);
+        //    if (val is null)
+        //    {
+        //        return Unauthorized("invalide refresh token");
+        //    }
+        //    if (val.Expires<DateTime.Now)
+        //    {
+        //        return Unauthorized("Token Expired");
+        //    }
+
+        //    string token = CreateToken(val.e)
+        //}
+
+
+        private void CreateHash(string password, out byte[] passwordHash, out byte[] passwordSalt)
+        {
+            using (var hmac = new HMACSHA512())
+            {
+                passwordSalt = hmac.Key;
+                passwordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(password));
+            }
+        }
+        private string CreateToken(string email)
+        {
+            List<Claim> claims = new List<Claim>()
+            {
+                new Claim(ClaimTypes.Name,email),
+                new Claim(ClaimTypes.Role,"Doc")
+            };
+
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration.GetSection("AppSettings:Token").Value));
+
+            var cred = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);
+
+            var token = new JwtSecurityToken(
+                claims: claims,
+                expires: DateTime.Now.AddMinutes(1),
+                signingCredentials: cred
+                );
+
+
+            var jwt = new JwtSecurityTokenHandler().WriteToken(token);
+            //Refresh Token
+            var RefreshToken = GenerateRefreshToken(claims[1].Value);
+            SetRefreshToken(RefreshToken);
+            return jwt;
+        }
+
+        private RefreshToken GenerateRefreshToken(string Role)
+        {
+            var refreshtoken = new RefreshToken()
+            {
+                Token = Convert.ToBase64String(RandomNumberGenerator.GetBytes(64)),
+                Expires = DateTime.Now.AddHours(2),
+                Created = DateTime.Now,
+                Role = Role
+            };
+            return refreshtoken;
+
+        }
+
+
+        private bool Verfypassword(string password, byte[] passHash, byte[] passSalt)
+        {
+            using (var hmac = new HMACSHA512(passSalt))
+            {
+                var computedHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(password));
+                return computedHash.SequenceEqual(passHash);
+            }
+        }
+
+
+
+        private void SetRefreshToken(RefreshToken refreshToken)
+        {
+            var cookiesOptions = new CookieOptions
+            {
+                HttpOnly = true,
+                Expires = refreshToken.Expires
+            };
+
+            Response.Cookies.Append("RefreshToken", refreshToken.Token, cookiesOptions);
+
+            refreshToken.Id = Guid.NewGuid();
+            _context.RefreshTokens.Add(refreshToken);
+            _context.SaveChanges();
+
+
         }
 
         private bool DiabeticienExists(string cin)

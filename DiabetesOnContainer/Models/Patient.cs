@@ -19,9 +19,9 @@ namespace DiabetesOnContainer.Models
         public DateTime DateNaissance { get; set; }
         public string Email { get; set; } = null!;
         public string Sexe { get; set; } = null!;
-        public string AssistId { get; set; } = null!;
+        public string? AssistId { get; set; }
 
-        public virtual Assistant Assist { get; set; } = null!;
+        public virtual Assistant? Assist { get; set; }
         public virtual ICollection<CasComplication> CasComplications { get; set; }
         public virtual ICollection<FicheMedical> FicheMedicals { get; set; }
         public virtual ICollection<FichePatient> FichePatients { get; set; }

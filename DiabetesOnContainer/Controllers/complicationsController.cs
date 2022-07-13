@@ -9,11 +9,14 @@ using DiabetesOnContainer.Models;
 using DiabetesOnContainer.DTOs.GestionPatient;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
+using Microsoft.AspNetCore.JsonPatch;
+using Microsoft.AspNetCore.Authorization;
 
 namespace DiabetesOnContainer.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(Roles = "Doc,Assist")]
     public class complicationsController : ControllerBase
     {
         private readonly DiabetesOnContainersContext _context;
@@ -49,35 +52,52 @@ namespace DiabetesOnContainer.Controllers
         public async Task<ActionResult<IEnumerable<Complication_Read>>> GetCasComplication(string cin)
         {
 
-            if (_context.CasComplications == null || ! CasComplicationExists(cin))
+            if (_context.CasComplications == null || !CasComplicationExists(cin))
             {
                 return NotFound();
             }
 
-            return  await _context.CasComplications
+            return await _context.CasComplications
                         //.Include(fk => fk.Patient)
-                        .Where(fk => fk.Patient.Cin == cin)
+                        .Where(fk => fk.PatientId == cin)
                         .ProjectTo<Complication_Read>(_mapper.ConfigurationProvider)
                         .ToListAsync();
         }
 
 
 
+        [HttpGet("{cin}/HisId")]
+        public async Task<ActionResult<Complication_Read>> GetCasComplicationById(string cin, int CompId)
+        {
+            if (_context.CasComplications== null || _context.Patients.Find(cin) == null)
+            {
+                return NotFound("the aptient does not exists");
+            }
+            var compli = _mapper.Map<Complication_Read>(ComplicationExistsUP(CompId, cin).Result);
+
+            if (compli == null)
+            {
+                return NotFound("the patient does not the historique   >>>" +CompId);
+            }
+
+            return compli;
+
+        }
         // PUT: api/CasComplications/1
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{cin}/{CompId}")]
         public async Task<IActionResult> PutCasComplication(string cin, int CompId, Complication_CUD update)
         {
             var complication = ComplicationExistsUP(CompId, cin).Result;
-         
-            if (complication == null  || update.PatientId != cin)
+
+            if (complication == null || update.PatientId != cin)
             {
                 return NotFound();
             }
 
             //map the values comming as DTO class to the Model class
-     
-            _mapper.Map(update ,complication);
+
+            _mapper.Map(update, complication);
 
             //send the model data to be modified
             _context.Entry(complication).State = EntityState.Modified;
@@ -89,10 +109,42 @@ namespace DiabetesOnContainer.Controllers
 
 
 
+        [HttpPatch("{Cin}/{Id}")]
+        public async Task<IActionResult> PatcComplication(string Cin, int Id, [FromBody] JsonPatchDocument<Complication_Read> update)
+        {
+            try
+            {
+                var compli = await _context.CasComplications
+                        .Include(fk => fk.Patient)
+                        .Where(con => con.PatientId == Cin && con.ComplicationId == Id)
+                        .ProjectTo<Complication_Read>(_mapper.ConfigurationProvider)
+                      .FirstOrDefaultAsync();
+                ;
+                if (compli == null)
+                {
+                    return NotFound("the cin does not exists in the table");
+                }
+                update.ApplyTo(compli);
+                var value = _mapper.Map<CasComplication>(compli);
+
+                _context.Entry(value).State = EntityState.Modified;
+                await _context.SaveChangesAsync();
+
+                return AcceptedAtAction(nameof(GetCasComplicationById), new { cin = Cin, CompId = Id }, compli);
+
+            }
+            catch (Exception ex)
+            {
+
+                return Content(ex.Message);
+            }
+        }
+
+
         // POST: api/CasComplications
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost("{cin}")]
-        public async Task<ActionResult<Complication_CUD>> PostCasComplication(string cin, Complication_CUD complication)
+        [HttpPost("Add/")]
+        public async Task<ActionResult<Complication_CUD>> PostCasComplication(Complication_CUD complication)
         {
             if (_context.CasComplications == null)
             {
@@ -105,7 +157,7 @@ namespace DiabetesOnContainer.Controllers
             }
 
             var row = await _context.CasComplications
-                      .FirstOrDefaultAsync(con=>con.PatientId == cin);
+                      .FirstOrDefaultAsync(con => con.PatientId == complication.PatientId);
 
             if (row == null) return NotFound("the patient does not exists");
 
@@ -121,7 +173,7 @@ namespace DiabetesOnContainer.Controllers
 
 
         // DELETE: api/FichePatients/5
-        [HttpDelete("{Cin}")]
+        [HttpDelete("delete/{Cin}")]
         public async Task<IActionResult> DeleteComplicationByCIN(string Cin)
         {
             if (_context.CasComplications == null)
@@ -144,7 +196,7 @@ namespace DiabetesOnContainer.Controllers
         }
 
         // DELETE: api/FichePatients/5
-        [HttpDelete("{Cin}/{PresId}")]
+        [HttpPost("delete/{Cin}/{PresId}")]
         public async Task<IActionResult> DeleteComplicationByID(string Cin, int PresId)
         {
             var complication = _mapper.Map<CasComplication>(ComplicationExistsUP(PresId, Cin).Result);
@@ -164,7 +216,7 @@ namespace DiabetesOnContainer.Controllers
 
         private bool CasComplicationExists(string cin)
         {
-            return (_context.Historiques?.Any(e => e.PatientId == cin)).GetValueOrDefault();
+            return (_context.CasComplications?.Any(e => e.PatientId == cin)).GetValueOrDefault();
         }
         private async Task<CasComplication> ComplicationExistsUP(int CompId, string Cin)
         {

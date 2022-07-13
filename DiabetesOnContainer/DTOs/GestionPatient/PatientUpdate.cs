@@ -22,7 +22,7 @@ namespace DiabetesOnContainer.DTOs.GestionPatient
         public string Email { get; set; } = null!;
 
         [Required]
-        public string Assist_ID { get; set; }
+        public string AssistId { get; set; }
 
     }
 }

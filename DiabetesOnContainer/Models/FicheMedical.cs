@@ -14,10 +14,10 @@ namespace DiabetesOnContainer.Models
 
         public int FicheMedId { get; set; }
         public string PatientId { get; set; } = null!;
-        public string RefMed { get; set; } = null!;
+        public string? RefMed { get; set; }
 
         public virtual Patient Patient { get; set; } = null!;
-        public virtual Diabeticien RefMedNavigation { get; set; } = null!;
+        public virtual Diabeticien? RefMedNavigation { get; set; }
         public virtual ICollection<Analysis> Analyses { get; set; }
         public virtual ICollection<Bilan> Bilans { get; set; }
         public virtual ICollection<Traitement> Traitements { get; set; }

@@ -10,11 +10,13 @@ using AutoMapper;
 using DiabetesOnContainer.DTOs.GestionPatient;
 using AutoMapper.QueryableExtensions;
 using Microsoft.AspNetCore.JsonPatch;
+using Microsoft.AspNetCore.Authorization;
 
 namespace DiabetesOnContainer.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(Roles = "Doc,Assist")]
     public class ParamBiosController : ControllerBase
     {
         private readonly DiabetesOnContainersContext _context;
@@ -86,7 +88,7 @@ namespace DiabetesOnContainer.Controllers
 
         // PUT: api/ParamBios/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("Change/{ParamId}/{ExamId}")]
+        [HttpPut("Change/{ExamId}/{ParamId}")]
         public async Task<IActionResult> PutParamBio( int ExamId, int ParamId, ParamBio_Update update)
         {
 
@@ -102,7 +104,7 @@ namespace DiabetesOnContainer.Controllers
             _mapper.Map(update, Param);
 
             //send the model data to be modified
-            _context.Entry(Param).State = EntityState.Detached;
+            _context.Entry(Param).State = EntityState.Modified;
 
             await _context.SaveChangesAsync();
 
@@ -112,15 +114,8 @@ namespace DiabetesOnContainer.Controllers
         [HttpPatch("Update/{ExamId}/{ParamId}")]
         public async Task<IActionResult> ParamPatch(int ExamId, int ParamId, [FromBody] JsonPatchDocument<ParamBio_Read> update)
         {
-
             try
             {
-
-                if (_context.ParamsBios.Find(ParamId) == null)
-                {
-                    return NotFound("the Param does not exist");
-                }
-
                 var Param = await _context.ParamsBios
                     .Where(con => con.ParamBioId == ParamId && con.ExamainId == ExamId)
                     .ProjectTo<ParamBio_Read>(_mapper.ConfigurationProvider)
@@ -135,12 +130,11 @@ namespace DiabetesOnContainer.Controllers
 
                 var value = _mapper.Map<ParamsBio>(Param);
 
-                _context.Entry(value).State = EntityState.Detached;
+                _context.Entry(value).State = EntityState.Modified;
 
                 await _context.SaveChangesAsync();
 
                 return AcceptedAtAction(nameof(GetParamBioById), new { ParamId, ExamId }, Param);
-
             }
             catch (Exception ex)
             {
@@ -190,7 +184,7 @@ namespace DiabetesOnContainer.Controllers
         }
 
 
-        [HttpDelete("Delete/{ExamId}/{ParamId}")]
+        [HttpPost("Delete/{ExamId}/{ParamId}")]
         public async Task<IActionResult> DeleteParamBioByID( int ExamId, int ParamId)
         {
             var Param = ParamBioExistsUP(ExamId,ParamId).Result;
@@ -208,7 +202,7 @@ namespace DiabetesOnContainer.Controllers
  
         private bool ParamBioExists(int Id)
         {
-            return (_context.ParamsBios?.Any(e => e.ParamBioId == Id)) is not null;
+            return (_context.ParamsBios?.Any(e => e.ExamainId == Id)) is not null;
         }
 
         private async Task<ParamsBio> ParamBioExistsUP( int ExamId,int ParamId)

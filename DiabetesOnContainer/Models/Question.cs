@@ -7,12 +7,14 @@ namespace DiabetesOnContainer.Models
     {
         public Question()
         {
-            Consultations = new HashSet<Consultation>();
+            Prescriptions = new HashSet<FichePatient>();
         }
 
         public int QuestionId { get; set; }
         public string Question1 { get; set; } = null!;
+        public string EtatDuQuestion { get; set; } = null!;
+        public string MedecinNotes { get; set; } = null!;
 
-        public virtual ICollection<Consultation> Consultations { get; set; }
+        public virtual ICollection<FichePatient> Prescriptions { get; set; }
     }
 }

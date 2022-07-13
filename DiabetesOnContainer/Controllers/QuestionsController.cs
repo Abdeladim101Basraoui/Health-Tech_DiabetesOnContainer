@@ -7,13 +7,15 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using DiabetesOnContainer.Models;
 using AutoMapper;
-using DiabetesOnContainer.DTOs.FichePatient;
+using DiabetesOnContainer.DTOs.GestionPatient;
 using AutoMapper.QueryableExtensions;
+using Microsoft.AspNetCore.Authorization;
 
 namespace DiabetesOnContainer.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(Roles = "Doc")]
     public class QuestionsController : ControllerBase
     {
         private readonly DiabetesOnContainersContext _context;
@@ -92,7 +94,7 @@ namespace DiabetesOnContainer.Controllers
             _context.Questions.Add(question);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction(nameof(GetQuestion), new { id = question.QuestionId }, question);
+            return CreatedAtAction(nameof(GetQuestion), new { id = question.QuestionId }, request);
         }
 
         // DELETE: api/Questions/5

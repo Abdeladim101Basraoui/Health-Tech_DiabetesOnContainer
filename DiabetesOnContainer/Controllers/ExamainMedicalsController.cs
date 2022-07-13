@@ -10,11 +10,13 @@ using AutoMapper;
 using DiabetesOnContainer.DTOs.GestionPatient;
 using AutoMapper.QueryableExtensions;
 using Microsoft.AspNetCore.JsonPatch;
+using Microsoft.AspNetCore.Authorization;
 
 namespace DiabetesOnContainer.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(Roles = "Doc,Assist")]
     public class ExamainMedicalsController : ControllerBase
     {
         private readonly DiabetesOnContainersContext _context;
@@ -35,6 +37,8 @@ namespace DiabetesOnContainer.Controllers
                 return NotFound();
             }
             return await _context.ExamainMedicals
+                .Include(k=>k.Echographies)
+                .Include(k=>k.ParamsBios)
                 .ProjectTo<ExamenMed_Read>(_mapper.ConfigurationProvider)
                 .ToListAsync();
         }
@@ -50,6 +54,8 @@ namespace DiabetesOnContainer.Controllers
 
             if (!ExamExists(PresId)) return NotFound("ce examen >> "+PresId+" << n'exist pas");
             return await _context.ExamainMedicals
+                .Include(k => k.Echographies)
+                .Include(k => k.ParamsBios)
                 .Where(con => con.PrescriptionId == PresId)
                 .ProjectTo<ExamenMed_Read>(_mapper.ConfigurationProvider)
                                    .ToListAsync();
@@ -76,7 +82,7 @@ namespace DiabetesOnContainer.Controllers
 
         // PUT: api/ExamainMedicals/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("Change/{PresId}/{ExamId}")]
+        [HttpPut("{PresId}/{ExamId}")]
         public async Task<IActionResult> PutExamainMedical(int PresId, int ExamId, ExamenMed_Update update)
         {
 
@@ -92,16 +98,18 @@ namespace DiabetesOnContainer.Controllers
             _mapper.Map(update, fiche);
 
             //send the model data to be modified
-            _context.Entry(fiche).State = EntityState.Detached;
+            _context.Entry(fiche).State = EntityState.Modified;
 
             await _context.SaveChangesAsync();
 
             return NoContent();
         }
 
-        //Patch: api/FichePatients/5/12
-        [HttpPatch("Update/{PresId}/{ExamId}")]
-        public async Task<IActionResult> ExamPatch(int PresId, int ExamId, [FromBody] JsonPatchDocument<ExamenMed_Read> update)
+
+///TODO : the patch not working
+//Patch: api/FichePatients/5/12
+        [HttpPatch("update/{PresId}/{ExamId}")]
+        public async Task<IActionResult> ExamPatch(int PresId, int ExamId, [FromBody] JsonPatchDocument<ExamenMed_Patch> update)
         {
 
             try
@@ -112,11 +120,7 @@ namespace DiabetesOnContainer.Controllers
                     return NotFound("the fiche Patient does not exist");
                 }
 
-                var fiche = await _context.ExamainMedicals
-                    .Where(con => con.PrescriptionId == PresId && con.ExamainId == ExamId)
-                    .ProjectTo<ExamenMed_Read>(_mapper.ConfigurationProvider)
-                    .FirstOrDefaultAsync();
-
+                var fiche = _mapper.Map<ExamenMed_Patch>(ExamExistsUP(PresId, ExamId).Result);
                 if (fiche == null)
                 {
                     return NotFound("la fiche  >> " + ExamId + " <<   does not exists");
@@ -124,10 +128,7 @@ namespace DiabetesOnContainer.Controllers
 
                 update.ApplyTo(fiche);
 
-                var value = _mapper.Map<ExamainMedical>(fiche);
-
-                _context.Entry(value).State = EntityState.Detached;
-
+                _context.Entry(_mapper.Map<ExamainMedical>(fiche)).State = EntityState.Modified;
                 await _context.SaveChangesAsync();
 
                 return AcceptedAtAction(nameof(GetExamtByID), new { PresId, ExamId }, fiche);
@@ -180,7 +181,7 @@ namespace DiabetesOnContainer.Controllers
         }
 
 
-        [HttpDelete("Delete/    {PresId}/{ExamId}")]
+        [HttpPost("Delete/{PresId}/{ExamId}")]
         public async Task<IActionResult> DeleteFichePatientByID(int PresId, int ExamId)
         {
             var fichePatient = ExamExistsUP(PresId, ExamId).Result;
