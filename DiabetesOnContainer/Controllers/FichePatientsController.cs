@@ -10,11 +10,13 @@ using DiabetesOnContainer.DTOs.GestionPatient;
 using AutoMapper.QueryableExtensions;
 using AutoMapper;
 using Microsoft.AspNetCore.JsonPatch;
+using Microsoft.AspNetCore.Authorization;
 
 namespace DiabetesOnContainer.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(Roles = "Doc,Assist")]
     public class FichePatientsController : ControllerBase
     {
         private readonly DiabetesOnContainersContext _context;

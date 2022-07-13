@@ -169,6 +169,10 @@ namespace DiabetesOnContainer.Controllers
         [HttpPost("Register")]
         public async Task<ActionResult> Register(DocRegister register)
         {
+            if (_context.Diabeticiens.FirstOrDefault(q=>q.Email == register.Email) is not null)
+            {
+                return BadRequest("this email is already exists try to loging or use an other one to register");
+            }
             CreateHash(register.password, out byte[] passHash, out byte[] passSalt);
 
             var doc = _mapper.Map<Diabeticien>(register);
@@ -257,7 +261,7 @@ namespace DiabetesOnContainer.Controllers
 
             var token = new JwtSecurityToken(
                 claims: claims,
-                expires: DateTime.Now.AddHours(1),
+                expires: DateTime.Now.AddMinutes(1),
                 signingCredentials: cred
                 );
 

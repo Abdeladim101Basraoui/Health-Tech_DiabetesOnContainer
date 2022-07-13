@@ -9,11 +9,13 @@ using DiabetesOnContainer.Models;
 using AutoMapper;
 using DiabetesOnContainer.DTOs.GestionPatient;
 using AutoMapper.QueryableExtensions;
+using Microsoft.AspNetCore.Authorization;
 
 namespace DiabetesOnContainer.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(Roles = "Doc")]
     public class QuestionsController : ControllerBase
     {
         private readonly DiabetesOnContainersContext _context;

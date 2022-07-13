@@ -60,7 +60,8 @@ builder.Services.AddSwaggerGen(
             Description = "Standard Authorisation using the Bearer Scheme (\"{bearer {token}})",
             In = ParameterLocation.Header,
             Name = "Authorization",
-            Type = SecuritySchemeType.ApiKey
+            Type = SecuritySchemeType.ApiKey,
+            Scheme ="Bearer"
         });
 
         options.OperationFilter<SecurityRequirementsOperationFilter>();
@@ -79,7 +80,8 @@ builder.Services.AddAuthentication(
             (builder.Configuration.GetSection("AppSettings:Token").Value))
             ,
                 ValidateIssuer = false,
-                ValidateAudience = false
+                ValidateAudience = false,
+                ValidateLifetime = true
 
             };
 
