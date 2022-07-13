@@ -1,0 +1,5 @@
+#ignore the front end directory
+/FrontEnd
+#
+node_modules
+
