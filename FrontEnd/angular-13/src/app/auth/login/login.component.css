@@ -1,0 +1,11 @@
+/*  */
+.container{
+  padding: 20%;
+}
+input[type = text]
+{
+  width: 300px;
+  padding: 7px;
+  margin: 10px;
+  flex: auto;
+}
