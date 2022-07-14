@@ -16,22 +16,22 @@ export class LoginComponent implements OnInit {
     password: new FormControl(''),
   });
 
-logincheck(email:any,password:any)
-{
-  localStorage.setItem("email",email);
-  localStorage.setItem('password',password);
+  logincheck(role: any, password: any) {
+    localStorage.setItem("role", role);
+    localStorage.setItem('password', password);
 
-console.log(`${email}    ${password}`);
-this.Route.navigate(['']);
-}
+    console.log(`${role}    ${password}`);
+  
+    this.Route.navigate(['']);
+  }
   //variables
 
-/**
- *
- */
-constructor(private Route:Router) {
+  /**
+   *
+   */
+  constructor(private Route: Router) {
 
-}
+  }
 
   ngOnInit(): void {
   }

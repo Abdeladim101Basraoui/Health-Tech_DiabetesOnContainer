@@ -142,7 +142,7 @@ export const MaterialRoutes: Routes = [
   ,
   {
     path: 'complication',
-    component: ComplicationComponent,
+    component: ComplicationComponent,   
     canActivate:[AuthGuard]
 
   }
