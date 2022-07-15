@@ -1,0 +1,4 @@
+#ignore the node_modules
+node_modules
+#ignore cash
+FrontEnd/angular-13/.angular
