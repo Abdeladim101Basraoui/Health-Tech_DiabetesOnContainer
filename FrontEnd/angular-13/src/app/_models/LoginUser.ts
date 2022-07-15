@@ -1,5 +1,10 @@
 export class loginUser
 {
-    email!:string;
-    passwored!:string;
+  role !:string ;
+    email !:string ;
+    password !:string ;
+}
+export interface Roles {
+  value: string;
+  viewValue: string;
 }

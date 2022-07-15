@@ -1,5 +1,6 @@
 import { MediaMatcher } from '@angular/cdk/layout';
 import {ChangeDetectorRef, Component,OnDestroy,AfterViewInit} from '@angular/core';
+import { AuthenticationService } from 'src/app/_services/authentication.service';
 import { MenuItems } from '../../shared/menu-items/menu-items';
 
 
@@ -17,7 +18,8 @@ export class FullComponent implements OnDestroy, AfterViewInit {
   constructor(
     changeDetectorRef: ChangeDetectorRef,
     media: MediaMatcher,
-    public menuItems: MenuItems
+    public menuItems: MenuItems,
+    public authservice:AuthenticationService
   ) {
     this.mobileQuery = media.matchMedia('(min-width: 768px)');
     this._mobileQueryListener = () => changeDetectorRef.detectChanges();

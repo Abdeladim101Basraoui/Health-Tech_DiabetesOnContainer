@@ -1,11 +1,17 @@
 /*  */
 .container{
-  padding: 20%;
+  padding: 40px;
+margin: 80px auto;
+  background-color: whitesmoke;
+  margin-bottom: 0%;
+border: 3px solid black;
+border-radius: 30px;
+width: 60%;
 }
-input[type = text]
-{
-  width: 300px;
-  padding: 7px;
-  margin: 10px;
-  flex: auto;
+body{
+  background-color: aliceblue;
+}
+
+.role{
+  padding-bottom: 20px;
 }
