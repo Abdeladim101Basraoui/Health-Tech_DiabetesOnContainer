@@ -1,5 +1,6 @@
+import { NgForOf } from '@angular/common';
 import { Component, EventEmitter, OnInit, Output } from '@angular/core';
-import { FormControl, FormGroup } from '@angular/forms';
+import { FormControl, FormGroup, NgForm } from '@angular/forms';
 import { Router } from '@angular/router';
 
 
@@ -24,11 +25,8 @@ export class LoginComponent implements OnInit {
   
     this.Route.navigate(['']);
   }
-  //variables
 
-  /**
-   *
-   */
+
   constructor(private Route: Router) {
 
   }
@@ -37,3 +35,4 @@ export class LoginComponent implements OnInit {
   }
 
 }
+
