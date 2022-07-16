@@ -21,8 +21,6 @@ namespace DiabetesOnContainer.DTOs.GestionPatient
         public DateTime DateNaissance { get; set; }
         public string Email { get; set; } = null!;
 
-        [Required]
-        public string AssistId { get; set; }
 
     }
 }
