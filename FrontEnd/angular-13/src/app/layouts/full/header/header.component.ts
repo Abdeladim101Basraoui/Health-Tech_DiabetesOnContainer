@@ -10,10 +10,8 @@ import { Router } from '@angular/router';
 export class AppHeaderComponent {
 logOut()
 {
-localStorage.removeItem("JWT");
-this.route.navigate(['login']);
-
-
+localStorage.clear();
+this.route.navigate(['login'])
 }
 /**
  *

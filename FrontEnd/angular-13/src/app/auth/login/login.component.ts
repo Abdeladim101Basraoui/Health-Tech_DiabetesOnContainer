@@ -11,21 +11,7 @@ import { AuthenticationService } from "src/app/_services/authentication.service"
 })
 export class LoginComponent implements OnInit {
   hide = true;
-  // selectedRole!:string;
 
-  // form: FormGroup = new FormGroup({
-  //   username: new FormControl(""),
-  //   password: new FormControl(""),
-  // });
-
-  // logincheck(role: any, password: any) {
-  //   localStorage.setItem("role", role);
-  //   localStorage.setItem('password', password);
-
-  //   console.log(`${role}    ${password}`);
-
-  //   this.Route.navigate(['']);
-  // }
 
   roleControl = new FormControl(null, Validators.required);
   emailFormControl = new FormControl("", Validators.required);
@@ -42,10 +28,6 @@ export class LoginComponent implements OnInit {
   }
 
   
-getvalues()
-{
-  this.authservice.GetTest();
-}
 
   /**
    *

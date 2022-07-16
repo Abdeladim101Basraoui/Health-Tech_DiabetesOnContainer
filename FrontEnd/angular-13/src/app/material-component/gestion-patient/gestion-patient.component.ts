@@ -2,6 +2,7 @@ import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
+import { CRUDService } from 'src/app/_services/crud.service';
 
 @Component({
   selector: 'app-gestion-patient',
@@ -9,51 +10,55 @@ import { MatTableDataSource } from '@angular/material/table';
   styleUrls: ['./gestion-patient.component.css']
 })
 
-export class GestionPatientComponent implements AfterViewInit {
+export class GestionPatientComponent  {
   displayedColumns: string[] = ['cin', 'nom', 'Prenom', 'DateNaissance','Email','sexe'];
-  dataSource: MatTableDataSource<PatientData>;
+  // dataSource: MatTableDataSource<PatientData>;
 
-  @ViewChild(MatPaginator) paginator!: MatPaginator;
-  @ViewChild(MatSort) sort!: MatSort;
+  // @ViewChild(MatPaginator) paginator!: MatPaginator;
+  // @ViewChild(MatSort) sort!: MatSort;
 
-  constructor() {
-    // Create 100 users
-    const users = Array.from({length: 100}, (_, k) => createNewUser(k + 1));
+  constructor(private crudService:CRUDService) {
+    // // Create 100 users
+    // const users = Array.from({length: 100}, (_, k) => createNewUser(k + 1));
 
-    // Assign the data to the data source for the table to render
-    this.dataSource = new MatTableDataSource(users);
+    // // Assign the data to the data source for the table to render
+    // this.dataSource = new MatTableDataSource(users);
   }
 
-  ngAfterViewInit() {
-    this.dataSource.paginator = this.paginator;
-    this.dataSource.sort = this.sort;
-  }
+  // ngAfterViewInit() {
+  //   this.dataSource.paginator = this.paginator;
+  //   this.dataSource.sort = this.sort;
+  // }
 
-  applyFilter(event: Event) {
-    const filterValue = (event.target as HTMLInputElement).value;
-    this.dataSource.filter = filterValue.trim().toLowerCase();
+  // applyFilter(event: Event) {
+  //   const filterValue = (event.target as HTMLInputElement).value;
+  //   this.dataSource.filter = filterValue.trim().toLowerCase();
 
-    if (this.dataSource.paginator) {
-      this.dataSource.paginator.firstPage();
-    }
-  }
+  //   if (this.dataSource.paginator) {
+  //     this.dataSource.paginator.firstPage();
+  //   }
+  // }
+  getvalues()
+{
+  this.crudService.getPatients();
 }
 
-/** Builds and returns a new User. */
-function createNewUser(id: number): PatientData {
-  const name =  NAMES[Math.round(Math.random() * (NAMES.length - 1))] +
-    ' ' +
-    NAMES[Math.round(Math.random() * (NAMES.length - 1))].charAt(0) +
-    '.';
-
-  return {
-    CIN: id.toString(),
-    fullname: name,
-    DateNaissance :new Date(),
-    Email : FRUITS[Math.round(Math.random()  * (FRUITS.length -1))],
-    sexe : "f"
-  };
 }
+
+// /** Builds and returns a new User. */
+// function createNewUser(id: number): PatientData {
+//   const name =  NAMES[Math.round(Math.random() * (NAMES.length - 1))] +
+//     ' ' +
+//     NAMES[Math.round(Math.random() * (NAMES.length - 1))].charAt(0) +
+//     '.';
+
+//   return {
+//     CIN: id.toString(),
+//     fullname: name,
+//     DateNaissance :new Date(),
+//     Email : FRUITS[Math.round(Math.random()  * (FRUITS.length -1))],
+//     sexe : "f"
+//   };
 
 
 

@@ -13,17 +13,18 @@ export class AuthenticationService {
 
 
   constructor(private http: HttpClient, private routing: Router) {
-    const token = localStorage.getItem('JWT');
     //in here we should check the expired date  and refresh the token
 
-    this._isLoggedIn.next(!!token);
+    // this._isLoggedIn.next(!!token);
+
   }
 
-  //describe the state of the user
-  private _isLoggedIn = new BehaviorSubject<boolean>(false);
+  // //describe the state of the user
+  // private _isLoggedIn = new BehaviorSubject<boolean>(false);
+  public _isLoggedIn :boolean = !!localStorage.getItem('JWT Doc') || !!localStorage.getItem('JWT Assist');
 
-  //any subscriber to this one will be notified of changes
-  public isLoggedIn = this._isLoggedIn.asObservable();
+  // //any subscriber to this one will be notified of changes
+  // public isLoggedIn = this._isLoggedIn.asObservable();
 
   ServerLogin(credentials: loginUser) {
 
@@ -44,8 +45,8 @@ export class AuthenticationService {
 
         console.log(response);
         localStorage.setItem(tokenName, response);
-        this._isLoggedIn.next(true);
-        this.routing.navigate(['']);
+        // this._isLoggedIn.next(true);
+        this.routing.navigate(['/']);
 
       }, err => {
         console.log(err);
@@ -96,27 +97,6 @@ export class AuthenticationService {
 
     return false;
   }
-
-  //
-  //
-  GetTest() {
-    //
-    const apiUrl = 'https://localhost:7146/api/Patients';
-    const token = localStorage.getItem('JWT');
-    const httpheader = new HttpHeaders({
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${token}`
-    })
-    this.http.get(apiUrl, { headers: httpheader }).subscribe(response => {
-      //
-      console.log(response);
-
-    }, err => {
-      console.log(err);
-    }
-    )
-  }
-
 }
 
 
