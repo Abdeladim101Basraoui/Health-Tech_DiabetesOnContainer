@@ -40,6 +40,8 @@ export class LoginComponent implements OnInit {
     };
     this.authservice.ServerLogin(credentials);
   }
+
+  
 getvalues()
 {
   this.authservice.GetTest();

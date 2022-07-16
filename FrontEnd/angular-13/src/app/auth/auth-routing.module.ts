@@ -30,7 +30,8 @@ const routes: Routes = [
   component:LoginComponent
 },
   {path:'register',
-component:RegisterComponent,canActivate:[RoleAccessGuard]
+component:RegisterComponent
+,canActivate:[RoleAccessGuard]
 }
 ];
 

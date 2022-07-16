@@ -1,1 +1,129 @@
-<p>register works!</p>
+<div class="container">
+    <form >
+    <h4>Register</h4>
+
+    <h4>choose your Role</h4>
+    <!-- drop down -->
+
+    <mat-form-field appearance="outliene" class="role">
+        <mat-label>Role</mat-label>
+        <mat-select [formControl]="roleControl" required>
+            <mat-option>--</mat-option>
+            <mat-option *ngFor="let role of roles" [value]="role.value">
+                {{role.viewValue}}
+            </mat-option>
+        </mat-select>
+        <mat-error *ngIf="roleControl.hasError('required')">Please choose a Role</mat-error>
+        <mat-hint> hello {{roleControl.value}}</mat-hint>
+    </mat-form-field>
+
+    <mat-form-field appearance="outliene" class="sex">
+        <mat-label>Gender</mat-label>
+        <mat-select [formControl]="genderControl" required>
+            <mat-option>--</mat-option>
+            <mat-option *ngFor="let sex of gender" [value]="sex.value">
+                {{sex.viewValue}}
+            </mat-option>
+        </mat-select>
+        <mat-error *ngIf="genderControl.hasError('required')">Please choose a Gender</mat-error>
+        <mat-hint> {{genderControl.value}}</mat-hint>
+    </mat-form-field>
+ 
+    <br>
+
+
+    
+   
+    <mat-form-field *ngIf="roleControl.value == 'Doc'" class="RefMed" appearance="outline">
+        <mat-label>RefMed</mat-label>
+        <input type="text" matInput #RefMed maxlength="8"
+        [formControl]="RefFormControl"
+            placeholder="Ref138497" />
+        <!-- <mat-error *ngIf="emailFormControl.hasError('email') && !emailFormControl.hasError('required')">
+            Please enter a valid email address
+        </mat-error> -->
+        <mat-error *ngIf="RefFormControl.hasError('required')">
+            Ref Medical is <strong>required</strong>
+        </mat-error>
+    </mat-form-field>
+
+    <!-- <mat-form-field class="email" appearance="outline">
+        <mat-label>Email</mat-label>
+        <input matInput #email maxlength="256" placeholder="Ex. I need help with..." />
+        <mat-hint align="start"><strong>Don't add @alamal.com to your email while registering</strong>
+        </mat-hint>
+        <mat-hint align="end">{{ email.value.length }} / 256</mat-hint>
+    </mat-form-field> -->
+    <br>
+
+   
+        <mat-form-field class="cin" appearance="outline">
+            <mat-label>C.I.N</mat-label>
+            <input type="text" matInput #cin maxlength="8" [formControl]="cinFormControl"
+                placeholder="BM24232" />
+            <!-- <mat-error *ngIf="emailFormControl.hasError('email') && !emailFormControl.hasError('required')">
+                Please enter a valid email address
+            </mat-error> -->
+            <mat-error *ngIf="cinFormControl.hasError('required')">
+                CIN is <strong>required</strong>
+            </mat-error>
+        </mat-form-field>
+
+
+ 
+        <mat-form-field class="nom" appearance="outline">
+            <mat-label>Nom</mat-label>
+            <input type="text" matInput #nom maxlength="32" [formControl]="nomFormControl"
+                placeholder="Ex. Maria" />
+            <!-- <mat-error *ngIf="emailFormControl.hasError('email') && !emailFormControl.hasError('required')">
+                Please enter a valid email address
+            </mat-error> -->
+            <mat-error *ngIf="nomFormControl.hasError('required')">
+                Nom is <strong>required</strong>
+            </mat-error>
+        </mat-form-field>
+
+
+
+        <mat-form-field class="Prenom" appearance="outline">
+            <mat-label>Prenom</mat-label>
+            <input type="text" matInput #prenom maxlength="15" [formControl]="prenomFormControl"
+                placeholder="Ex. Abdeladim" />
+            <!-- <mat-error *ngIf="emailFormControl.hasError('email') && !emailFormControl.hasError('required')">
+                Please enter a valid email address
+            </mat-error> -->
+            <mat-error *ngIf="prenomFormControl.hasError('required')">
+                Prenom is <strong>required</strong>
+            </mat-error>
+        </mat-form-field>
+
+
+
+        <mat-form-field class="email" appearance="outline">
+            <mat-label>Email</mat-label>
+            <input type="email" matInput #email maxlength="256" [formControl]="emailFormControl"
+                placeholder="Ex. pat@example.com" />
+            <mat-error *ngIf="emailFormControl.hasError('email') && !emailFormControl.hasError('required')">
+                Please enter a valid email address
+            </mat-error>
+            <mat-error *ngIf="emailFormControl.hasError('required')">
+                Email is <strong>required</strong>
+            </mat-error>
+        </mat-form-field>
+
+
+    <mat-form-field appearance="fill" class="password">
+        <mat-label>Enter your password</mat-label>
+        <input matInput #password [type]="hide ? 'password' : 'text'">
+        <button mat-icon-button matSuffix (click)="hide = !hide" [attr.aria-label]="'Hide password'"
+            [attr.aria-pressed]="hide">
+            <mat-icon>{{hide ? 'visibility_off' : 'visibility'}}</mat-icon>
+        </button>
+    </mat-form-field>
+
+    <span class="spacer">
+         <button mat-raised-button color="primary" (click)="register(cin.value,nom.value,prenom.value,email.value, password.value)">Primary</button>
+       <!-- <button mat-raised-button color="primary" (click)="getvalues()">test   </button> -->
+    </span>
+</form>
+</div>
