@@ -39,6 +39,9 @@ namespace DiabetesOnContainer.Controllers
             return Ok(_mapper.Map<IEnumerable<Patient_READ>>(await _context.Patients.ToListAsync()));
         }
 
+        
+
+
         // GET: api/Patients/pat1234
         [HttpGet("{cin}")]
         public async Task<ActionResult<Patient_READ>> GetPatient(string cin)

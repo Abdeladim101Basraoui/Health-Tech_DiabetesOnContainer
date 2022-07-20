@@ -3,17 +3,10 @@ using System.ComponentModel.DataAnnotations;
 
 namespace DiabetesOnContainer.DTOs.GestionPatient
 {
-    public class Patient_READ 
+    public class Patient_READ :Patient_CUD
     {
-        [Required]
-        public string Cin { get; set; }
-
+  
         public string FullName { get; set; }
-        [Required]
-        public DateTime DateNaissance { get; set; }
-        public string Email { get; set; } = null!;
-        [Required]
-        public string Sexe { get; set; }
 
 
     }
