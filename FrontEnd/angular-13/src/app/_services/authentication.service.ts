@@ -11,18 +11,12 @@ import { tap } from 'rxjs/operators';
   providedIn: 'root'
 })
 export class AuthenticationService {
-
+  private readonly patientUrl = 'FichePatients';
 
   constructor(private http: HttpClient, private routing: Router) {
-    //in here we should check the expired date  and refresh the token
-
-    this._isLoggedIn.next(!!localStorage.key(0));
-    this._isSuperUser.next(!!localStorage.key(0)?.endsWith('Doc'));
-
-    // console.log(`the logged token ${localStorage.key(0)}`);
-    console.log(`is it a Super User ${!!localStorage.key(0)?.endsWith('Doc')}`);
-
-
+    //TODO in here we should check the expired date  and refresh the token
+    this._isLoggedIn.next(!!this.Token);
+    this._isSuperUser.next(!!this.Token?.endsWith('Doc'));
   }
 
   // //describe the state of the user  -- default state is faulse
@@ -34,6 +28,11 @@ export class AuthenticationService {
   // //any subscriber to this one will be notified of changes
   public isLoggedIn = this._isLoggedIn.asObservable();
   public isSuperUser = this._isSuperUser.asObservable();
+
+
+  get Token() {
+    return localStorage.key(0)?.toString();
+  }
 
   public tokenName: string = '';
   ServerLogin(credentials: loginUser) {
@@ -77,11 +76,11 @@ export class AuthenticationService {
     }
 
 
-    const token = localStorage.getItem('JWT Doc');
-    const httpheader = new HttpHeaders({
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${token}`
-    })
+    const token = localStorage.key(0)?.toString();
+    // const httpheader = new HttpHeaders({
+    //   'Content-Type': 'application/json',
+    //   'Authorization': `Bearer ${token}`
+    // })
 
 
     this.http.post(link, data, { headers: httpheader })
@@ -103,6 +102,10 @@ export class AuthenticationService {
     }
 
     return false;
+  }
+
+  getFichePatient() {
+
   }
 }
 
