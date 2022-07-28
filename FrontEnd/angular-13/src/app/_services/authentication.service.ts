@@ -4,7 +4,8 @@ import { loginUser, } from '../_models/LoginUser';
 import { Route } from '@angular/compiler/src/core';
 import { Router } from '@angular/router';
 import { BehaviorSubject } from 'rxjs';
-import { getLocaleMonthNames } from '@angular/common';
+import { environment } from 'src/environments/environment';
+import { tap } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
@@ -15,58 +16,64 @@ export class AuthenticationService {
   constructor(private http: HttpClient, private routing: Router) {
     //in here we should check the expired date  and refresh the token
 
-    // this._isLoggedIn.next(!!token);
+    this._isLoggedIn.next(!!localStorage.key(0));
+    this._isSuperUser.next(!!localStorage.key(0)?.endsWith('Doc'));
+
+    // console.log(`the logged token ${localStorage.key(0)}`);
+    console.log(`is it a Super User ${!!localStorage.key(0)?.endsWith('Doc')}`);
+
 
   }
 
-  // //describe the state of the user
-  // private _isLoggedIn = new BehaviorSubject<boolean>(false);
-  public _isLoggedIn :boolean = !!localStorage.getItem('JWT Doc') || !!localStorage.getItem('JWT Assist');
+  // //describe the state of the user  -- default state is faulse
+  private _isLoggedIn = new BehaviorSubject<boolean>(false);
+  private _isSuperUser = new BehaviorSubject<boolean>(false);
+
+  // public _isLoggedIn :boolean = !!localStorage.getItem('JWT Doc') || !!localStorage.getItem('JWT Assist');
 
   // //any subscriber to this one will be notified of changes
-  // public isLoggedIn = this._isLoggedIn.asObservable();
+  public isLoggedIn = this._isLoggedIn.asObservable();
+  public isSuperUser = this._isSuperUser.asObservable();
 
+  public tokenName: string = '';
   ServerLogin(credentials: loginUser) {
 
     let link: string = '';
-    let tokenName: string = '';
     if (credentials.role == "Doc") {
-      link = 'https://localhost:7146/api/admin/Diabeticiens/login';
-      tokenName = 'JWT Doc'
+      link = `${environment.baseAPIUrl}/admin/Diabeticiens/login`;
+      this.tokenName = 'JWT Doc'
     }
 
     if (credentials.role == "Assist") {
-      link = 'https://localhost:7146/api/admin/Assistants/login';
-      tokenName = 'JWT Assist'
+      link = `${environment.baseAPIUrl}/admin/Assistants/login`;
+      this.tokenName = 'JWT Assist'
     }
 
-    this.http.post(link, { 'email': credentials.email, "password": credentials.password }, { responseType: 'text' })
-      .subscribe(response => {
+    return this.http.post(link, { 'email': credentials.email, "password": credentials.password }, { responseType: 'text' }).pipe(
+      tap((response: any) => {
 
-        console.log(response);
-        localStorage.setItem(tokenName, response);
-        // this._isLoggedIn.next(true);
-        this.routing.navigate(['/']);
+        //save the token to local storage
+        localStorage.setItem(this.tokenName, response);
 
-      }, err => {
-        console.log(err);
+        //keep the state of the user
+        this._isLoggedIn.next(true);
 
-        this.routing.navigate(['login']);
-      }
-      )
+      })
+    );
+
   }
 
-  
+
   //
   Register(data: any, role: string) {
     let link: string = '';
 
     if (role == "Doc") {
-      link = 'https://localhost:7146/api/admin/Diabeticiens/register';
+      link = `${environment.baseAPIUrl}/admin/Diabeticiens/register`;
     }
 
     if (role == "Assist") {
-      link = 'https://localhost:7146/api/admin/Assistants/Register';
+      link = `${environment.baseAPIUrl}/admin/Assistants/Register`;
     }
 
 
@@ -79,7 +86,7 @@ export class AuthenticationService {
 
     this.http.post(link, data, { headers: httpheader })
       .subscribe(response => {
-        this.routing.navigate(['/']);
+        this.routing.navigate(['']);
 
       }, err => {
         console.log(err);
@@ -99,32 +106,3 @@ export class AuthenticationService {
   }
 }
 
-
-
-
-
-
-  //   islogged() {
-  //   const role = localStorage.getItem("role");
-  //   const password = localStorage.getItem("password");
-  //   return (role != null && role != '' && password != null && role != '') ? true : false;
-  // }
-
-
-  // RoleCanAccess(accessmanu: any) {
-  //   const Role = localStorage.getItem('role');
-
-  //   if (Role?.toLowerCase().trim() == 'doc') {
-  //     return true;
-  //   }
-  //   else {
-  //     if (accessmanu == "register") {   
-  //       return false;
-  //     }
-  //     else if (Role?.toLowerCase().trim() == "assist") { return true; }
-  //     else{
-
-  //       return false;
-  //     }
-  //   }
-  // }

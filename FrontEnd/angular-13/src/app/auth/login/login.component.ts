@@ -24,7 +24,22 @@ export class LoginComponent implements OnInit {
       email: email,
       password: _password
     };
-    this.authservice.ServerLogin(credentials);
+
+    let tokenName: string = '';
+    if (credentials.role == "Doc") {
+      tokenName = 'JWT Doc'
+    }
+    if (credentials.role == "Assist") {
+      tokenName = 'JWT Assist'
+    }
+
+    this.authservice.ServerLogin(credentials).subscribe(response => {
+        this.routing.navigate(['']);
+      }, err => {
+        console.log(err);
+        this.routing.navigate(['login']);
+      }
+      );
   }
 
   
@@ -32,7 +47,7 @@ export class LoginComponent implements OnInit {
   /**
    *
    */
-  constructor(private authservice:AuthenticationService) {
+  constructor(private authservice:AuthenticationService,private routing:Router) {
         
   }
   ngOnInit(): void {}

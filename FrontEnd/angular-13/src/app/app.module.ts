@@ -18,6 +18,7 @@ import { DemoMaterialModule } from './demo-material-module';
 import { SharedModule } from './shared/shared.module';
 import { SpinnerComponent } from './shared/spinner.component';
 import { AuthModule } from './auth/auth.module';
+import { MatTableModule } from '@angular/material/table';
 
 @NgModule({
   declarations: [
@@ -36,6 +37,7 @@ import { AuthModule } from './auth/auth.module';
     HttpClientModule,
     SharedModule,
    AuthModule,
+   MatTableModule,
     RouterModule.forRoot(AppRoutes),
 
   ],

@@ -20,3 +20,8 @@ export class RegisterAssist {
 export class RegisterDoc extends RegisterAssist {
   RefMed!: string
 }
+
+export class patient
+{
+  // ''
+}
