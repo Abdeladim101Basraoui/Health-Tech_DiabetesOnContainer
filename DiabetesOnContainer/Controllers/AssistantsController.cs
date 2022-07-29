@@ -199,6 +199,7 @@ namespace DiabetesOnContainer.Controllers
 
 
         [HttpPatch("{Cin}")]
+
         public async Task<IActionResult> PatchAssistant(string Cin, [FromBody] JsonPatchDocument<AssistCD> update)
         {
             var Assistant = AssistExistsPatch(Cin).Result;
@@ -219,16 +220,12 @@ namespace DiabetesOnContainer.Controllers
         public async Task<IActionResult> DeleteAssistant(string cin)
         {
             var assistant = await _context.Assistants
-                .Include(f => f.Patients)
                 .FirstOrDefaultAsync(req => req.Cin == cin);
             if (assistant == null || _context.Assistants == null)
             {
                 return NotFound();
             }
-            foreach (var pat in assistant.Patients)
-            {
-                pat.AssistId = null;
-            }
+        
             await _context.SaveChangesAsync();
 
             _context.Assistants.Remove(assistant);
@@ -273,7 +270,7 @@ namespace DiabetesOnContainer.Controllers
 
             var token = new JwtSecurityToken(
                 claims: claims,
-                expires: DateTime.Now.AddHours(1),
+                expires: DateTime.Now.AddDays(1),
                 signingCredentials: cred
                 );
 

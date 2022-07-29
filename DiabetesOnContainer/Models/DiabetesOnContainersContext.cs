@@ -377,11 +377,6 @@ namespace DiabetesOnContainer.Models
                     .IsUnicode(false)
                     .HasColumnName("CIN");
 
-                entity.Property(e => e.AssistId)
-                    .HasMaxLength(50)
-                    .IsUnicode(false)
-                    .HasColumnName("Assist_ID");
-
                 entity.Property(e => e.DateNaissance).HasColumnType("datetime");
 
                 entity.Property(e => e.Email)
@@ -400,11 +395,6 @@ namespace DiabetesOnContainer.Models
                     .HasMaxLength(2)
                     .IsUnicode(false)
                     .HasColumnName("sexe");
-
-                entity.HasOne(d => d.Assist)
-                    .WithMany(p => p.Patients)
-                    .HasForeignKey(d => d.AssistId)
-                    .HasConstraintName("FK_Patients_Assistants");
             });
 
             modelBuilder.Entity<Question>(entity =>

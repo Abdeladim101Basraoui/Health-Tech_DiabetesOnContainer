@@ -1,6 +1,7 @@
 ﻿using DiabetesOnContainer.Models;
 using System.ComponentModel.DataAnnotations;
 
+
 namespace DiabetesOnContainer.DTOs.GestionPatient
 {
     public class FichePatient_Read: FichePatient_Create
@@ -9,6 +10,6 @@ namespace DiabetesOnContainer.DTOs.GestionPatient
         public string patientFullName { get; set; }
         public ICollection<Question_READ> Questions { get; set; }
 
-        public ICollection<ExamainMedical> examainMedicals { get; set; }
+        public ICollection<ExamenMed_Read> examainMedicals { get; set; }
     }
 }
