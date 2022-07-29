@@ -83,7 +83,7 @@ export class AuthenticationService {
     // })
 
 
-    this.http.post(link, data, { headers: httpheader })
+    this.http.post(link, data /*,{ headers: httpheader }*/)
       .subscribe(response => {
         this.routing.navigate(['']);
 

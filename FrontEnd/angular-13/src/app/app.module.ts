@@ -19,6 +19,7 @@ import { SharedModule } from './shared/shared.module';
 import { SpinnerComponent } from './shared/spinner.component';
 import { AuthModule } from './auth/auth.module';
 import { MatTableModule } from '@angular/material/table';
+import { AuthReqInterceptor } from './_interceptors/auth-requests.interceptor';
 
 @NgModule({
   declarations: [
@@ -45,7 +46,10 @@ import { MatTableModule } from '@angular/material/table';
     {
       provide: LocationStrategy,
       useClass: PathLocationStrategy
-    }
+    },
+    //best practice
+    //the interceptors export details of the interceptors
+   AuthReqInterceptor
   ],
   bootstrap: [AppComponent]
 })
