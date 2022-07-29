@@ -39,14 +39,17 @@ export class RoleAccessGuard implements CanActivate, CanActivateChild {
   }
 
   AccessVerify() {
-    return this.authservice.isSuperUser.pipe(
-      tap((isSuper) => {
-        if (!isSuper) {
-          alert(`403 thank you`);
-          this.route.navigate(['']);
-        }
-      })
-    );
+  //   return this.authservice.isSuperUser.pipe(
+  //     tap((isSuper) => {
+  //       if (!isSuper) {
+  //         alert(`403 thank you`);
+  //         this.route.navigate(['']);
+  //       }
+  //     })
+  //   );
+
+  //---------------
+  return this.authservice.isSuperUser;
   }
 
   /**

@@ -25,13 +25,13 @@ export class AuthRequestsInterceptor implements HttpInterceptor {
       }
     );
     return next.handle(request);
-  }
+  } 
 }
 
 //to be called in the appModole.ts
 //obj used for the call
 export const AuthReqInterceptor = {
-provide:HTTP_INTERCEPTORS,
-useClass:AuthRequestsInterceptor,
-multi:true
+  provide: HTTP_INTERCEPTORS,
+  useClass: AuthRequestsInterceptor,
+  multi: true
 }

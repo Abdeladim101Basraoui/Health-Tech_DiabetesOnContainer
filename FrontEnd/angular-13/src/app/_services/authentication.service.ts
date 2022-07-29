@@ -1,31 +1,39 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http'
-import { loginUser, } from '../_models/LoginUser';
+import { loginUser, } from '../_models/LoginUser_model';
 import { Route } from '@angular/compiler/src/core';
 import { Router } from '@angular/router';
 import { BehaviorSubject } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { tap } from 'rxjs/operators';
+import { userRole } from '../_models/userRole_model';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthenticationService {
   private readonly patientUrl = 'FichePatients';
+  user!: userRole;
 
   constructor(private http: HttpClient, private routing: Router) {
     //TODO in here we should check the expired date  and refresh the token
     this._isLoggedIn.next(!!this.Token);
-    this._isSuperUser.next(!!this.Token?.endsWith('Doc'));
+
+    // this._isSuperUser.next(!!this.user.role.includes('Doc'));
+    // console.log(new Date(this.user.exp*1000));
+    
+    
+    //the state of the token
+    this.user = this.getUser(this.Token!);
   }
 
-  // //describe the state of the user  -- default state is faulse
+  // -->describe the state of the user  -- default state is faulse
   private _isLoggedIn = new BehaviorSubject<boolean>(false);
   private _isSuperUser = new BehaviorSubject<boolean>(false);
 
   // public _isLoggedIn :boolean = !!localStorage.getItem('JWT Doc') || !!localStorage.getItem('JWT Assist');
 
-  // //any subscriber to this one will be notified of changes
+  // -->any subscriber to this one will be notified of changes
   public isLoggedIn = this._isLoggedIn.asObservable();
   public isSuperUser = this._isSuperUser.asObservable();
 
@@ -54,6 +62,7 @@ export class AuthenticationService {
         //save the token to local storage
         localStorage.setItem(this.tokenName, response);
 
+        this.user= this.getUser(response);
         //keep the state of the user
         this._isLoggedIn.next(true);
 
@@ -106,6 +115,13 @@ export class AuthenticationService {
 
   getFichePatient() {
 
+  }
+
+//get the data from the token {role <==> exp date}
+  private getUser(token: string): userRole {
+    // return JSON.parse(atob(token.split('.')[1])) as userRole;
+    // this._isSuperUser.next(!!this.user.role.includes('Doc'));
+    return JSON.parse(atob(token.split('.')[1])) ;
   }
 }
 

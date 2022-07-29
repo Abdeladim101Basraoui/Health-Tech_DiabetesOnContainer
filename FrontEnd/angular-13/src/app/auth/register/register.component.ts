@@ -1,7 +1,7 @@
 
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
-import { RegisterAssist, RegisterDoc, Roles } from 'src/app/_models/LoginUser';
+import { RegisterAssist, RegisterDoc, Roles } from 'src/app/_models/LoginUser_model';
 import { AuthenticationService } from 'src/app/_services/authentication.service';
 
 @Component({
