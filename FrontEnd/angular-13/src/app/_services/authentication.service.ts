@@ -18,21 +18,26 @@ export class AuthenticationService {
   //the payload infos
   user!: userRole;
 
-
   constructor(private http: HttpClient, private routing: Router) {
-    //TODO in here we should check the expired date and refresh the token
-    this._isLoggedIn.next(!!this.Token);
+    // console.log(this.isLoggedIn);
 
-    // this._isSuperUser.next(!!this.user.role.includes('Doc'));
-    console.log(`the token is ${this.Token}`);
+    if (!!this.Token) {
+      //TODO in here we should check the expired date and refresh the token
+      
+      
+      //the state of the token
+      this.user = this.getUser(this.Token!);
+      
+      this._isLoggedIn.next(!!this.Token);
 
-    //the state of the token
-    this.user = this.getUser(this.Token!);
+      this._isSuperUser.next(!!this.user.userRole.includes("Doc"));
 
-    console.log(`the date is ${new Date(this.user.exp * 1000)
-      }`);
-    console.log(`the role is ${this.user.role}`);
+      console.log(`the token is ${this.Token}`);
 
+
+      console.log(`the date is ${new Date(this.user.exp * 1000)}`);
+      console.log(this.user);
+    }
   }
 
   // -->describe the state of the user  -- default state is faulse
@@ -78,6 +83,7 @@ export class AuthenticationService {
           this._isLoggedIn.next(true);
         })
       );
+      ;
   }
 
   //
@@ -118,7 +124,7 @@ export class AuthenticationService {
     return false;
   }
 
-  getFichePatient() { }
+  getFichePatient() {}
 
   //get the data from the token {role <==> exp date}
   private getUser(token: string): userRole {

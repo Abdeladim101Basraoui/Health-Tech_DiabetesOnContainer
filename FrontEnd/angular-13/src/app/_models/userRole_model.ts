@@ -1,5 +1,6 @@
 export interface userRole
 {
-role:string
-exp:number
+    userEmail:string
+    userRole:string
+    exp:number
 }
