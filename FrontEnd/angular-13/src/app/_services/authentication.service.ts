@@ -57,16 +57,18 @@ export class AuthenticationService {
   public tokenName: string = "";
   ServerLogin(credentials: loginUser) {
     let link: string = "";
+
+    //TODO the solution of the conditions is in the backend
     if (credentials.role == "Doc") {
       link = `${environment.baseAPIUrl}/admin/Diabeticiens/login`;
-      this.tokenName = "JWT Doc";
+
     }
 
     if (credentials.role == "Assist") {
       link = `${environment.baseAPIUrl}/admin/Assistants/login`;
-      this.tokenName = "JWT Assist";
-    }
 
+    }
+//return the observer
     return this.http
       .post(
         link,
@@ -76,11 +78,14 @@ export class AuthenticationService {
       .pipe(
         tap((response: any) => {
           //save the token to local storage
-          localStorage.setItem(this.tokenName, response);
-
           this.user = this.getUser(response);
+
+          this.tokenName = `JWT ${this.user.userRole}`;
+          localStorage.setItem(this.tokenName, response);
+          
           //keep the state of the user
           this._isLoggedIn.next(true);
+          this._isSuperUser.next(this.user.userRole.includes('Doc'));
         })
       );
       ;

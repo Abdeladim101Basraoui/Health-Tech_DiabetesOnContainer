@@ -24,7 +24,7 @@ export class RoleAccessGuard implements CanActivate, CanActivateChild {
     | boolean
     | UrlTree {
 
-    return this.AccessVerify();
+    return this.AccessVerify(route.data.role);
   }
   canActivateChild(
     childRoute: ActivatedRouteSnapshot,
@@ -35,13 +35,15 @@ export class RoleAccessGuard implements CanActivate, CanActivateChild {
     | boolean
     | UrlTree {
 
-    return this.AccessVerify();
+    return this.AccessVerify(childRoute.data.role);
   }
 
-  AccessVerify() {
+  AccessVerify(tokenrole:string) {
     return this.authservice.isSuperUser.pipe(
       tap((isSuper) => {
-        if (!isSuper) {
+        if (!isSuper 
+          && !this.authservice.user.userRole.includes(tokenrole)
+          ) {
           alert(`403 thank you`);
           this.route.navigate(['']);
         }
@@ -50,6 +52,7 @@ export class RoleAccessGuard implements CanActivate, CanActivateChild {
 
   //---------------
   // return this.authservice.isSuperUser;
+  //this.authservice.user.userRole.includes(tokenrole);
   }
 
   /**

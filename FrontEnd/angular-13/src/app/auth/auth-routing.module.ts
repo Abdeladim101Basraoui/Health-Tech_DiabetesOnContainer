@@ -31,7 +31,8 @@ const routes: Routes = [
 },
   {path:'register',
 component:RegisterComponent
-,canActivate:[RoleAccessGuard]
+,canActivate:[RoleAccessGuard],
+data:{role:'Doc'}
 }
 ];
 
