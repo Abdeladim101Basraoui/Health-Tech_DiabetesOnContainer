@@ -2,4 +2,6 @@
 /FrontEnd
 #
 node_modules
-
+#ignore the bin and the obj folder
+DiabetesOnContainer/bin
+DiabetesOnContainer/obj
