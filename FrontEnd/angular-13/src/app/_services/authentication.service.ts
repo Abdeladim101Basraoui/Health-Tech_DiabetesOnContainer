@@ -32,11 +32,9 @@ export class AuthenticationService {
 
       this._isSuperUser.next(!!this.user.userRole.includes("Doc"));
 
-      console.log(`the token is ${this.Token}`);
-
-
-      console.log(`the date is ${new Date(this.user.exp * 1000)}`);
-      console.log(this.user);
+      // console.log(`the token is ${this.Token}`);
+      // console.log(`the date is ${new Date(this.user.exp * 1000)}`);
+      // console.log(this.user);
     }
   }
 
