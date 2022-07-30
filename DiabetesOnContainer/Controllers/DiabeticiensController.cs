@@ -253,8 +253,8 @@ namespace DiabetesOnContainer.Controllers
             {
                 new Claim(ClaimTypes.Name,email),
                 new Claim(ClaimTypes.Role,"Doc"),
-                  new Claim("Name",email),
-                new Claim("Role","Doc")
+                new Claim("userEmail",email),
+                new Claim("userRole","Doc")
             };
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration.GetSection("AppSettings:Token").Value));
