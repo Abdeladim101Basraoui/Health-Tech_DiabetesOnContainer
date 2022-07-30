@@ -14,13 +14,12 @@ import { userRole } from "../_models/userRole_model";
 export class AuthenticationService {
   //call Url
   private readonly patientUrl = "FichePatients";
-  
+
   //the payload infos
   user!: userRole;
 
 
-  constructor(private http: HttpClient, private routing: Router) 
-  {
+  constructor(private http: HttpClient, private routing: Router) {
     //TODO in here we should check the expired date and refresh the token
     this._isLoggedIn.next(!!this.Token);
 
@@ -29,12 +28,11 @@ export class AuthenticationService {
 
     //the state of the token
     this.user = this.getUser(this.Token!);
-    
-    console.log(`the date is ${
-      new Date(this.user.exp*1000)
-    }`);
- console.log(`the role is ${this.user.role}`);
- 
+
+    console.log(`the date is ${new Date(this.user.exp * 1000)
+      }`);
+    console.log(`the role is ${this.user.role}`);
+
   }
 
   // -->describe the state of the user  -- default state is faulse
@@ -120,7 +118,7 @@ export class AuthenticationService {
     return false;
   }
 
-  getFichePatient() {}
+  getFichePatient() { }
 
   //get the data from the token {role <==> exp date}
   private getUser(token: string): userRole {
