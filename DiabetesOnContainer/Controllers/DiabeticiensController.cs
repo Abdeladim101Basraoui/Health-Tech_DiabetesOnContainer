@@ -169,7 +169,7 @@ namespace DiabetesOnContainer.Controllers
         [HttpPost("Register")]
         public async Task<ActionResult> Register(DocRegister register)
         {
-            if (_context.Diabeticiens.FirstOrDefault(q=>q.Email == register.Email) is not null)
+            if (_context.Diabeticiens.FirstOrDefault(q => q.Email == register.Email) is not null)
             {
                 return BadRequest("this email is already exists try to loging or use an other one to register");
             }
@@ -252,7 +252,9 @@ namespace DiabetesOnContainer.Controllers
             List<Claim> claims = new List<Claim>()
             {
                 new Claim(ClaimTypes.Name,email),
-                new Claim(ClaimTypes.Role,"Doc")
+                new Claim(ClaimTypes.Role,"Doc"),
+                  new Claim("Name",email),
+                new Claim("Role","Doc")
             };
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration.GetSection("AppSettings:Token").Value));
