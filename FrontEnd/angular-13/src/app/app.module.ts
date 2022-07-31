@@ -20,6 +20,7 @@ import { SpinnerComponent } from './shared/spinner.component';
 import { AuthModule } from './auth/auth.module';
 import { MatTableModule } from '@angular/material/table';
 import { AuthReqInterceptor } from './_interceptors/auth-requests.interceptor';
+import { MatMenuModule } from '@angular/material/menu';
 
 @NgModule({
   declarations: [
@@ -37,8 +38,9 @@ import { AuthReqInterceptor } from './_interceptors/auth-requests.interceptor';
     FlexLayoutModule,
     HttpClientModule,
     SharedModule,
-   AuthModule,
-   MatTableModule,
+    AuthModule,
+    MatTableModule,
+    MatMenuModule,
     RouterModule.forRoot(AppRoutes),
 
   ],
@@ -49,8 +51,8 @@ import { AuthReqInterceptor } from './_interceptors/auth-requests.interceptor';
     },
     //best practice
     //the interceptors export details of the interceptors
-   AuthReqInterceptor
+    AuthReqInterceptor
   ],
   bootstrap: [AppComponent]
 })
-export class AppModule {}
+export class AppModule { }

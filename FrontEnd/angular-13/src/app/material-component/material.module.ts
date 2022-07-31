@@ -35,6 +35,7 @@ import { ConsultationComponent } from './consultation/consultation.component';
 import { GestionPatientComponent } from './gestion-patient/gestion-patient.component';
 import { SuivieComponent } from './suivie/suivie.component';
 import { ComplicationComponent } from './complication/complication.component';
+import { EditDialogComponent } from './gestion-patient/edit-dialog/edit-dialog.component';
 
 @NgModule({
   imports: [
@@ -70,7 +71,8 @@ import { ComplicationComponent } from './complication/complication.component';
     ConsultationComponent,
     GestionPatientComponent,
     SuivieComponent,
-    ComplicationComponent
+    ComplicationComponent,
+    EditDialogComponent
   ]
 })
 export class MaterialComponentsModule {}
