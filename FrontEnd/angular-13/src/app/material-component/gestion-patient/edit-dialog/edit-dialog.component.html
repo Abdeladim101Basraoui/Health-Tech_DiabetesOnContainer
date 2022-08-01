@@ -42,12 +42,12 @@
   <!-- datenaissance -->
   <mat-form-field color="accent" appearance="outline">
     <mat-label>Please select your day of birth</mat-label>
-    <input matInput [matDatepicker]="picker1" formControlName="date" />
+    <input matInput [matDatepicker]="dp" [formControl]="datenaissance"formControlName="date">
     <mat-hint>MM/DD/YYYY</mat-hint>
-    <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
-    <mat-datepicker #picker1></mat-datepicker>
+    <mat-datepicker-toggle matSuffix [for]="dp"></mat-datepicker-toggle>
+    <mat-datepicker #dp></mat-datepicker>
   </mat-form-field>
-
+  
   <!-- Gender -->
   <mat-form-field appearance="fill">
     <mat-label>Gender</mat-label>
