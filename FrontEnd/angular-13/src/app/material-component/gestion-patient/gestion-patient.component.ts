@@ -1,11 +1,13 @@
 import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { tap } from 'rxjs/operators';
-import { fichepatient,patient_Read } from 'src/app/_models/requests_models';
+import { fichepatient, patient_Read } from 'src/app/_models/requests_models';
 import { AuthenticationService } from 'src/app/_services/authentication.service';
 import { RequestsService } from 'src/app/_services/requests.service';
+import { EditDialogComponent } from './edit-dialog/edit-dialog.component';
 // import { CRUDService } from 'src/app/_services/crud.service';
 
 @Component({
@@ -14,45 +16,43 @@ import { RequestsService } from 'src/app/_services/requests.service';
   styleUrls: ['./gestion-patient.component.css']
 })
 
-export class GestionPatientComponent implements OnInit{
-  ELEMENT_DATA!:patient_Read[];
+export class GestionPatientComponent implements OnInit {
+  ELEMENT_DATA!: patient_Read[];
   displayedColumns: string[] = ['cin', 'Full Name', 'nom', 'Prenom', 'Gender', 'DateNaissance', 'Email', 'actions'];
-  dataSource = new  MatTableDataSource<patient_Read>(this.ELEMENT_DATA);
+  dataSource = new MatTableDataSource<patient_Read>(this.ELEMENT_DATA);
 
 
   constructor(
-    private requests: RequestsService,public authservice:AuthenticationService
+    private requests: RequestsService, public authservice: AuthenticationService, private dialog: MatDialog
   ) {
 
   }
 
   showPatients() {
-    console.log("evetn");
     this.requests.getpatients().subscribe(
       (response) => {
-            //map data to data source
+        //map data to data source
         this.dataSource.data = response as patient_Read[];
         console.log(response as patient_Read[])
-     },
+      },
       (err) => {
         console.log(err);
       }
     )
   }
 
-//add patients
-addPatient()
-{
-  console.log('add');
-  
-} 
 
+  //open dialog
+  openPatientEdit() {
+    const dialogRef = this.dialog.open(EditDialogComponent,
+      {
+        width: "50% auto"
+      });
 
-//open dialog
-openPatientEdit()
-{
-    
-}
+    dialogRef.afterClosed().subscribe(result => {
+
+    });
+  }
 
   // ----[pagnation and table properties]
 
@@ -65,10 +65,10 @@ openPatientEdit()
     this.dataSource.sort = this.sort;
   }
 
-    ngOnInit(): void {
+  ngOnInit(): void {
     this.showPatients();
-    console.log(this.showPatients());
-    
+    // console.log(this.showPatients());
+
   }
 
 

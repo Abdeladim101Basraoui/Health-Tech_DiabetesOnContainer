@@ -1,0 +1,67 @@
+<h3 mat-dialog-title>Patient Informations</h3>
+<!-- using reactive forms -->
+<div mat-dialog-content>
+
+  <form [formGroup]="patientForm">
+      <!-- email -->
+  <div class="email">
+    <mat-form-field appearance="outline">
+      <mat-label>Enter your email</mat-label>
+      <input matInput placeholder="Mai@example.com" [formControl]="email" formControlName="email" required />
+      <mat-error *ngIf="email.invalid">{{ getErrorMessage() }}</mat-error>
+    </mat-form-field>
+  </div>
+
+  <!-- cin -->
+  <div class="cin">
+    <mat-form-field appearance="outline">
+      <mat-label>Enter your C.I.N</mat-label>
+      <input matInput placeholder="BJ834183" [formControl]="cin" formControlName="cin" required />
+      <mat-error *ngIf="cin.invalid">{{ getErrorMessage() }}</mat-error>
+    </mat-form-field>
+  </div>
+
+  <!-- nom -->
+  <div class="nom">
+    <mat-form-field appearance="outline">
+      <mat-label>Enter your nom</mat-label>
+      <input matInput placeholder="Mia" [formControl]="nom" formControlName="nom" required />
+      <mat-error *ngIf="nom.invalid">{{ getErrorMessage() }}</mat-error>
+    </mat-form-field>
+  </div>
+
+  <!-- prenom -->
+  <div class="prenom">
+    <mat-form-field appearance="outline">
+      <mat-label>Enter your Prenom</mat-label>
+      <input matInput placeholder="Alaoui" [formControl]="nom" formControlName="prenom" required />
+      <mat-error *ngIf="nom.invalid">{{ getErrorMessage() }}</mat-error>
+    </mat-form-field>
+  </div>
+
+  <!-- datenaissance -->
+  <mat-form-field color="accent" appearance="outline">
+    <mat-label>Please select your day of birth</mat-label>
+    <input matInput [matDatepicker]="picker1" formControlName="date" />
+    <mat-hint>MM/DD/YYYY</mat-hint>
+    <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
+    <mat-datepicker #picker1></mat-datepicker>
+  </mat-form-field>
+
+  <!-- Gender -->
+  <mat-form-field appearance="fill">
+    <mat-label>Gender</mat-label>
+    <mat-select [(ngModel)]="selectedValue" formControlName="sexe" name="gender">
+      <mat-option *ngFor="let sexe of gender" [value]="sexe.value">
+        {{ sexe.viewValue }}
+      </mat-option>
+    </mat-select>
+  </mat-form-field>
+
+  </form>
+  <!-- left buttons -->
+  <div class="down-btn" mat-dialog-action [align]="'right'">
+    <button mat-raised-button color="warn" aria-label="close" mat-dialog-close (click)="Close()">close</button>
+    <button mat-raised-button color="accent" aria-label="submit" (click)="PostPatient()">confim</button>
+  </div>
+</div>

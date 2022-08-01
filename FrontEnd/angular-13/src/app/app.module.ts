@@ -2,7 +2,7 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { RouterModule } from '@angular/router';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule, HttpClient } from '@angular/common/http';
 import { LocationStrategy, PathLocationStrategy } from '@angular/common';
 import { AppRoutes } from './app.routing';
@@ -21,6 +21,9 @@ import { AuthModule } from './auth/auth.module';
 import { MatTableModule } from '@angular/material/table';
 import { AuthReqInterceptor } from './_interceptors/auth-requests.interceptor';
 import { MatMenuModule } from '@angular/material/menu';
+import { MatSelectModule } from '@angular/material/select';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatButtonModule } from '@angular/material/button';
 
 @NgModule({
   declarations: [
@@ -41,6 +44,11 @@ import { MatMenuModule } from '@angular/material/menu';
     AuthModule,
     MatTableModule,
     MatMenuModule,
+    MatSelectModule,
+    MatDatepickerModule,
+    MatButtonModule,
+    ReactiveFormsModule,
+    FormsModule,
     RouterModule.forRoot(AppRoutes),
 
   ],
