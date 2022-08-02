@@ -21,7 +21,8 @@ export class GestionPatientComponent implements OnInit {
   ELEMENT_DATA!: patient_Read[];
   displayedColumns: string[] = ['cin', 'Full Name', 'nom', 'Prenom', 'Gender', 'DateNaissance', 'Email', 'actions'];
   dataSource = new MatTableDataSource<patient_Read>(this.ELEMENT_DATA);
-  
+
+  isSuper:boolean = this.authservice.user.userRole.includes('Doc');
 
 
   constructor(
@@ -52,19 +53,38 @@ export class GestionPatientComponent implements OnInit {
       });
 
     dialogRef.afterClosed().subscribe(result => {
-
+      if (result == 'save') {
+        this.showPatients();
+      }
     });
   }
+  //edit
+  openPatientEdit(row: any) {
+    const dialogRef = this.dialog.open(
+      EditDialogComponent, {
+      width: '50% auto',
+      data: row
+    }
+    );
+    dialogRef.afterClosed().subscribe(result => {
+      if (result == 'update') {
 
-  openPatientEdit(row:any)
-  {
-    this.dialog.open(
-      EditDialogComponent,{
-        width:'50% auto',
-        data:row
+      } this.showPatients();
+    }
+    )
+  }
+
+
+  //delete
+  deletePatient(cin: string) {
+    this.requests.deletePatient(cin).subscribe(
+      res => {
+        alert(`the patient ${cin} is deleted`);
+        this.showPatients();
       }
     )
   }
+
 
   // ----[pagnation and table properties]
 

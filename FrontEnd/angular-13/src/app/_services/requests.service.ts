@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from 'src/environments/environment';
-import { fichepatient, patient_Read} from '../_models/requests_models';
+import { fichepatient, patient_put, patient_Read} from '../_models/requests_models';
 import { AuthenticationService } from './authentication.service';
 
 @Injectable({
@@ -34,4 +34,14 @@ public postPatient(patientdata:any)
   return this.http.post(`${environment.baseAPIUrl}/${this.patientUrl}`,patientdata)
 }
 
+// /put
+public putPatient(patientdata:patient_put,cin:string)
+{
+  return this.http.put(`${environment.baseAPIUrl}/${this.patientUrl}/${cin}`,patientdata)
+}
+
+public deletePatient(cin:string)
+{
+  return this.http.delete(`${environment.baseAPIUrl}/${this.patientUrl}/${cin}`);
+}
 }

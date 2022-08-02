@@ -65,11 +65,11 @@
             <mat-icon>edit_note</mat-icon>
             <span>Edit</span>
           </button>
-          <button mat-menu-item [disabled]="!!this.authservice.user.userRole.includes('Doc')">
+          <button mat-menu-item [disabled]="!isSuper" (click)="deletePatient(row.cin)">
             <mat-icon>person_remove</mat-icon>
-            <span>Delete</span>
+            <span>Delete {{isSuper}}</span>
           </button>
-          <button mat-menu-item [disabled]="!!this.authservice.user.userRole.includes('Doc')">
+          <button mat-menu-item [disabled]="!isSuper">
             <mat-icon>health_and_safety</mat-icon>
             <span>Quic Consult</span>
           </button>

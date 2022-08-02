@@ -62,7 +62,7 @@
   </form>
   <!-- left buttons -->
   <div class="down-btn" mat-dialog-action [align]="'right'">
-    <button mat-raised-button   color="warn" aria-label="close" mat-dialog-close (click)="Close()">close</button>
-    <button mat-raised-button style="margin-left: 4px;" color="accent" aria-label="submit" (click)="PostPatient(date.value)">confim</button>
+    <button mat-raised-button   color="warn" aria-label="close" mat-dialog-close >close</button>
+    <button mat-raised-button style="margin-left: 4px;" color="accent" aria-label="submit" (click)="PostPatient(date.value)">{{confirmBtnstate}}</button>
   </div>
 </div>

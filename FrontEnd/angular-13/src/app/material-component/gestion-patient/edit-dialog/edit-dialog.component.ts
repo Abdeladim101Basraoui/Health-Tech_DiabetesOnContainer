@@ -8,7 +8,7 @@ import { GestionPatientComponent } from '../gestion-patient.component';
 // import * as _moment from 'moment';
 // // tslint:disable-next-line:no-duplicate-imports
 // import { default as _rollupMoment } from 'moment';
-import { patient_Cud } from 'src/app/_models/requests_models';
+import { patient_Cud, patient_put } from 'src/app/_models/requests_models';
 import { DialogComponent } from '../../dialog/dialog.component';
 
 
@@ -41,10 +41,11 @@ export class EditDialogComponent implements OnInit {
 
     selectedDate!: Date;
 
+    confirmBtnstate: string = 'save';
 
     constructor(private formbuilder: FormBuilder, private requestService: RequestsService, private dialogRef: MatDialogRef<DialogComponent>,
-        @Inject(MAT_DIALOG_DATA) public editData:any
-        ) { }
+        @Inject(MAT_DIALOG_DATA) public editData: any
+    ) { }
 
 
     ngOnInit(): void {
@@ -59,16 +60,17 @@ export class EditDialogComponent implements OnInit {
                 sexe: this.gendervalidate
             }
         )
-     if (this.editData) {
-           this.patientForm.controls['email'].setValue(this.editData.email);
-           this.patientForm.controls['cin'].setValue(this.editData.cin);
-           this.patientForm.controls['nom'].setValue(this.editData.nom);
-           this.patientForm.controls['prenom'].setValue(this.editData.prenom);
-           this.patientForm.controls['datenaissance'].setValue(Date.now());
-        console.log(this.editData.dateNaissance);
-           this.patientForm.controls['gendervalidate'].setValue(this.editData.sexe);
-     }
-        
+        if (this.editData) {
+            this.confirmBtnstate = 'update';
+            this.patientForm.controls['email'].setValue(this.editData.email);
+            this.patientForm.controls['cin'].setValue(this.editData.cin);
+            this.patientForm.controls['nom'].setValue(this.editData.nom);
+            this.patientForm.controls['prenom'].setValue(this.editData.prenom);
+            this.patientForm.controls['date'].setValue(this.editData.dateNaissance);
+            console.log(this.editData.dateNaissance);
+            this.selectedValue = this.editData.sexe;
+        }
+
         // this.patientForm.controls['date'].setValue(datevalue);
     }
 
@@ -95,35 +97,55 @@ export class EditDialogComponent implements OnInit {
     PostPatient(_date: Date) {
         if (this.patientForm.valid || !this.email.valid) {
 
-            let data: patient_Cud = {
-                nom: this.nom.value,
-                prenom: this.prenom.value,
-                email: this.email.value,
-                sexe: this.gendervalidate.value,
-                dateNaissance: _date,
-                cin: this.cin.value
-            }
-            console.log(data);
-            
-            this.requestService.postPatient(data).subscribe
-                (
-                    (response) => {
-                        alert(`the product is addedd successfuly`)
-                        this.dialogRef.close('save');
+            if (this.editData) {
+                let data: patient_put =
+                {
+                    dateNaissance: _date,
+                    email: this.email.value,
+                    nom: this.nom.value,
+                    prenom: this.prenom.value,
+                    sexe: this.gendervalidate.value
+                }
+                this.requestService.putPatient(data,this.editData.cin).subscribe(
+                    res => {
+                        alert('updated successfuly');
+                        this.dialogRef.close('update');
                         this.patientForm.reset();
-                    },
-                    (err) => {
+                    }, err => {
                         console.log(err);
                     }
-                );
+                )
+            }
+            else {
+                let data: patient_Cud = {
+                    nom: this.nom.value,
+                    prenom: this.prenom.value,
+                    email: this.email.value,
+                    sexe: this.gendervalidate.value,
+                    dateNaissance: _date,
+                    cin: this.cin.value
+                }
+                console.log(data);
+
+                this.requestService.postPatient(data).subscribe
+                    (
+                        (response) => {
+                            alert(`the product is addedd successfuly`)
+                            this.dialogRef.close('save');
+                            this.patientForm.reset();
+                        },
+                        (err) => {
+                            console.log(err);
+                        }
+                    );
+            }
         }
         else {
             alert('fill all the field');
         }
     }
-    Close() {
 
-    }
+
 
 
 
