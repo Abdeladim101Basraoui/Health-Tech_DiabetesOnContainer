@@ -7,6 +7,7 @@ import { tap } from 'rxjs/operators';
 import { fichepatient, patient_Read } from 'src/app/_models/requests_models';
 import { AuthenticationService } from 'src/app/_services/authentication.service';
 import { RequestsService } from 'src/app/_services/requests.service';
+import { DialogComponent } from '../dialog/dialog.component';
 import { EditDialogComponent } from './edit-dialog/edit-dialog.component';
 // import { CRUDService } from 'src/app/_services/crud.service';
 
@@ -20,6 +21,7 @@ export class GestionPatientComponent implements OnInit {
   ELEMENT_DATA!: patient_Read[];
   displayedColumns: string[] = ['cin', 'Full Name', 'nom', 'Prenom', 'Gender', 'DateNaissance', 'Email', 'actions'];
   dataSource = new MatTableDataSource<patient_Read>(this.ELEMENT_DATA);
+  
 
 
   constructor(
@@ -33,7 +35,7 @@ export class GestionPatientComponent implements OnInit {
       (response) => {
         //map data to data source
         this.dataSource.data = response as patient_Read[];
-        console.log(response as patient_Read[])
+        // console.log(response as patient_Read[])
       },
       (err) => {
         console.log(err);
@@ -43,7 +45,7 @@ export class GestionPatientComponent implements OnInit {
 
 
   //open dialog
-  openPatientEdit() {
+  openPatientAdd() {
     const dialogRef = this.dialog.open(EditDialogComponent,
       {
         width: "50% auto"
@@ -52,6 +54,16 @@ export class GestionPatientComponent implements OnInit {
     dialogRef.afterClosed().subscribe(result => {
 
     });
+  }
+
+  openPatientEdit(row:any)
+  {
+    this.dialog.open(
+      EditDialogComponent,{
+        width:'50% auto',
+        data:row
+      }
+    )
   }
 
   // ----[pagnation and table properties]

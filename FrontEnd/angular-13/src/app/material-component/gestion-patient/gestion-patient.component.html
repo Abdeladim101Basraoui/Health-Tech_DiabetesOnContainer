@@ -1,5 +1,5 @@
 <div mat-dialog-action [align]="'right'">
-  <button mat-fab color="primary" aria-label="add patient" (click)="openPatientEdit()">
+  <button mat-fab color="primary" aria-label="add patient" (click)="openPatientAdd()">
     <mat-icon>add</mat-icon>
   </button>
 </div>
@@ -61,15 +61,15 @@
           <mat-icon>more_vert</mat-icon>
         </button>
         <mat-menu #menu="matMenu">
-          <button mat-menu-item (click)="openPatientEdit()">
+          <button mat-menu-item (click)="openPatientEdit(row)">
             <mat-icon>edit_note</mat-icon>
             <span>Edit</span>
           </button>
-          <button mat-menu-item [disabled]="this.authservice.user.userRole.includes('Doc')">
+          <button mat-menu-item [disabled]="!!this.authservice.user.userRole.includes('Doc')">
             <mat-icon>person_remove</mat-icon>
             <span>Delete</span>
           </button>
-          <button mat-menu-item [disabled]="this.authservice.user.userRole.includes('Doc')">
+          <button mat-menu-item [disabled]="!!this.authservice.user.userRole.includes('Doc')">
             <mat-icon>health_and_safety</mat-icon>
             <span>Quic Consult</span>
           </button>
@@ -89,5 +89,5 @@
     </tr>
   </table>
 
-  <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]" aria-label="Select page of users"></mat-paginator>
+  <mat-paginator [pageSizeOptions]="[7, 14, 28, 100]" aria-label="Select page of users"></mat-paginator>
 </div>

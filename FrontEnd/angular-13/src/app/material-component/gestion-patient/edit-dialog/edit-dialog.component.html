@@ -7,7 +7,7 @@
   <div class="email">
     <mat-form-field appearance="outline">
       <mat-label>Enter your email</mat-label>
-      <input matInput placeholder="Mai@example.com" [formControl]="email" formControlName="email" required />
+      <input matInput placeholder="Mai@example.com"  [formControl]="email"formControlName="email" />
       <mat-error *ngIf="email.invalid">{{ getErrorMessage() }}</mat-error>
     </mat-form-field>
   </div>
@@ -16,7 +16,7 @@
   <div class="cin">
     <mat-form-field appearance="outline">
       <mat-label>Enter your C.I.N</mat-label>
-      <input matInput placeholder="BJ834183" [formControl]="cin" formControlName="cin" required />
+      <input matInput placeholder="BJ834183" [formControl]="cin" formControlName="cin"  required />
       <mat-error *ngIf="cin.invalid">{{ getErrorMessage() }}</mat-error>
     </mat-form-field>
   </div>
@@ -25,7 +25,7 @@
   <div class="nom">
     <mat-form-field appearance="outline">
       <mat-label>Enter your nom</mat-label>
-      <input matInput placeholder="Mia" [formControl]="nom" formControlName="nom" required />
+      <input matInput placeholder="Mia" [formControl]="nom" formControlName="nom"  required />
       <mat-error *ngIf="nom.invalid">{{ getErrorMessage() }}</mat-error>
     </mat-form-field>
   </div>
@@ -34,7 +34,7 @@
   <div class="prenom">
     <mat-form-field appearance="outline">
       <mat-label>Enter your Prenom</mat-label>
-      <input matInput placeholder="Alaoui" [formControl]="nom" formControlName="prenom" required />
+      <input matInput placeholder="Alaoui" [formControl]="nom" formControlName="prenom"  required />
       <mat-error *ngIf="nom.invalid">{{ getErrorMessage() }}</mat-error>
     </mat-form-field>
   </div>
@@ -42,12 +42,13 @@
   <!-- datenaissance -->
   <mat-form-field color="accent" appearance="outline">
     <mat-label>Please select your day of birth</mat-label>
-    <input matInput [matDatepicker]="dp" [formControl]="datenaissance"formControlName="date">
+    <input matInput [matDatepicker]="dp" [formControl]="datenaissance" formControlName="date" #date>
     <mat-hint>MM/DD/YYYY</mat-hint>
     <mat-datepicker-toggle matSuffix [for]="dp"></mat-datepicker-toggle>
     <mat-datepicker #dp></mat-datepicker>
   </mat-form-field>
   
+  <span>{{date.value}}</span>
   <!-- Gender -->
   <mat-form-field appearance="fill">
     <mat-label>Gender</mat-label>
@@ -61,7 +62,7 @@
   </form>
   <!-- left buttons -->
   <div class="down-btn" mat-dialog-action [align]="'right'">
-    <button mat-raised-button color="warn" aria-label="close" mat-dialog-close (click)="Close()">close</button>
-    <button mat-raised-button color="accent" aria-label="submit" (click)="PostPatient()">confim</button>
+    <button mat-raised-button   color="warn" aria-label="close" mat-dialog-close (click)="Close()">close</button>
+    <button mat-raised-button style="margin-left: 4px;" color="accent" aria-label="submit" (click)="PostPatient(date.value)">confim</button>
   </div>
 </div>

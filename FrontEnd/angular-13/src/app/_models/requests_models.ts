@@ -19,7 +19,8 @@ export class patient_Cud extends patient_put {
 
 //patient read
 export class patient_Read extends patient_Cud {
-    fullName!: string
+    fullName!: string;
+    prescriptionId!:number;
 }
 
 //------------------

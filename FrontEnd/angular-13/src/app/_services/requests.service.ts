@@ -16,14 +16,22 @@ export class RequestsService {
   constructor(private http:HttpClient,private authservice:AuthenticationService) { }
 
 
-  public getFichePatient():Observable<fichepatient>
+  public getFichePatient():Observable<fichepatient[]>
   {
-    return this.http.get<fichepatient>(`${environment.baseAPIUrl}/${this.fichePatientUrl}`);
+    return this.http.get<fichepatient[]>(`${environment.baseAPIUrl}/${this.fichePatientUrl}`);
   }
 
+
+  //---patient
   public getpatients():Observable<patient_Read[]>
   {
    return  this.http.get<patient_Read[]>(`${environment.baseAPIUrl}/${this.patientUrl}`);
   }
+
+  //post
+public postPatient(patientdata:any)
+{
+  return this.http.post(`${environment.baseAPIUrl}/${this.patientUrl}`,patientdata)
+}
 
 }

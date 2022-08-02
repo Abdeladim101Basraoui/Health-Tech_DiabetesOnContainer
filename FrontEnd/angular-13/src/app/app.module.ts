@@ -49,6 +49,7 @@ import { MatButtonModule } from '@angular/material/button';
     MatButtonModule,
     ReactiveFormsModule,
     FormsModule,
+    MatDatepickerModule,
     RouterModule.forRoot(AppRoutes),
 
   ],
