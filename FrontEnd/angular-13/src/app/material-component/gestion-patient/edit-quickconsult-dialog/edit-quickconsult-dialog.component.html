@@ -1,0 +1,43 @@
+<!-- ref
+nom
+motif -->
+<h3 mat-dialog-title>Patient Informations</h3>
+<!-- using reactive forms -->
+<div mat-dialog-content>
+    <form [formGroup]="quickConsultform">
+        <!-- email -->
+        <div class="refMed">
+            <mat-form-field appearance="outline">
+                <mat-label>RefMed</mat-label>
+                <input matInput placeholder="ref.56789" [formControl]="refMed" formControlName="refMed" />
+                <mat-error *ngIf="refMed.invalid">{{ getErrorMessage() }}</mat-error>
+            </mat-form-field>
+        </div>
+
+        <!-- nom prescription -->
+        <div class="nompres">
+            <mat-form-field appearance="outline">
+                <mat-label>nom prescription</mat-label>
+                <input matInput placeholder="consultation" [formControl]="nompres" formControlName="nompres" />
+                <mat-error *ngIf="nompres.invalid">{{ getErrorMessage() }}</mat-error>
+            </mat-form-field>
+        </div>
+
+        <!-- motif prescription -->
+        <div class="motifpres">
+            <mat-form-field appearance="outline">
+                <mat-label>Motif Prescription</mat-label>
+                <textarea matInput placeholder="consultation numero deux" [formControl]="motifpres"
+                    formControlName="motifpres"></textarea>
+                <mat-error *ngIf="motifpres.invalid">{{ getErrorMessage() }}</mat-error>
+            </mat-form-field>
+        </div>
+
+        <!-- buttons -->
+        <!-- left buttons -->
+        <div class="down-btn" mat-dialog-action [align]="'right'">
+            <button mat-raised-button style="margin-left: 4px;" color="accent" aria-label="submit"
+                (click)="PostfichePatient()">ASAP</button>
+        </div>
+    </form>
+</div>

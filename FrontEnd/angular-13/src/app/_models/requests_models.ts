@@ -1,4 +1,5 @@
 import { exhaustMap } from "rxjs-compat/operator/exhaustMap"
+import { expand } from "rxjs-compat/operator/expand"
 
 //patient put
 export class patient_put {
@@ -25,17 +26,21 @@ export class patient_Read extends patient_Cud {
 
 //------------------
 //
+export class fichepatient_post
+{
+       cin!: string;
+    refMed!: string;
+    nomPres!: string;
+    motifPres!: string;
+    datePres!: string;
+}
 
-export class fichepatient {
+export class fichepatient extends fichepatient_post{
     prescriptionId!: number;
     patientFullName!: string;
     // questions !: questions[];
     // examainMedicals!: exams[];
-    cin!: string;
-    refMed!: string;
-    nomPres!: string;
-    motifPres!: string;
-    datePres!: Date;
+ 
 }
 
 

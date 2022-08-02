@@ -36,6 +36,11 @@ import { GestionPatientComponent } from './gestion-patient/gestion-patient.compo
 import { SuivieComponent } from './suivie/suivie.component';
 import { ComplicationComponent } from './complication/complication.component';
 import { EditDialogComponent } from './gestion-patient/edit-dialog/edit-dialog.component';
+import { EditQuickconsultDialogComponent } from './gestion-patient/edit-quickconsult-dialog/edit-quickconsult-dialog.component';
+import { ConsultDetailsComponent } from './consultation/consult-details/consult-details.component';
+import { QuestionsDetailsComponent } from './consultation/questions-details/questions-details.component';
+import { EchographieDetailsComponent } from './consultation/echographie-details/echographie-details.component';
+import { ParamBioDetailsComponent } from './consultation/param-bio-details/param-bio-details.component';
 
 @NgModule({
   imports: [
@@ -72,7 +77,12 @@ import { EditDialogComponent } from './gestion-patient/edit-dialog/edit-dialog.c
     GestionPatientComponent,
     SuivieComponent,
     ComplicationComponent,
-    EditDialogComponent
+    EditDialogComponent,
+    EditQuickconsultDialogComponent,
+    ConsultDetailsComponent,
+    QuestionsDetailsComponent,
+    EchographieDetailsComponent,
+    ParamBioDetailsComponent
   ]
 })
 export class MaterialComponentsModule {}

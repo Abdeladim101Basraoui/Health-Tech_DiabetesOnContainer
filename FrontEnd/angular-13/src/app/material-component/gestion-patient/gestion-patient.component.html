@@ -69,7 +69,7 @@
             <mat-icon>person_remove</mat-icon>
             <span>Delete {{isSuper}}</span>
           </button>
-          <button mat-menu-item [disabled]="!isSuper">
+          <button mat-menu-item [disabled]="!isSuper" (click)="openQuickConsult(row)">
             <mat-icon>health_and_safety</mat-icon>
             <span>Quic Consult</span>
           </button>

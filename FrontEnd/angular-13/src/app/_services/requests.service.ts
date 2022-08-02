@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from 'src/environments/environment';
-import { fichepatient, patient_put, patient_Read} from '../_models/requests_models';
+import { fichepatient, fichepatient_post, patient_put, patient_Read} from '../_models/requests_models';
 import { AuthenticationService } from './authentication.service';
 
 @Injectable({
@@ -16,9 +16,15 @@ export class RequestsService {
   constructor(private http:HttpClient,private authservice:AuthenticationService) { }
 
 
+  //---fiche patient
   public getFichePatient():Observable<fichepatient[]>
   {
     return this.http.get<fichepatient[]>(`${environment.baseAPIUrl}/${this.fichePatientUrl}`);
+  }
+
+  public postFichePatient(data:fichepatient_post)
+  {
+    return this.http.post(`${environment.baseAPIUrl}/${this.fichePatientUrl}`,data);
   }
 
 

@@ -9,6 +9,7 @@ import { AuthenticationService } from 'src/app/_services/authentication.service'
 import { RequestsService } from 'src/app/_services/requests.service';
 import { DialogComponent } from '../dialog/dialog.component';
 import { EditDialogComponent } from './edit-dialog/edit-dialog.component';
+import { EditQuickconsultDialogComponent } from './edit-quickconsult-dialog/edit-quickconsult-dialog.component';
 // import { CRUDService } from 'src/app/_services/crud.service';
 
 @Component({
@@ -58,6 +59,7 @@ export class GestionPatientComponent implements OnInit {
       }
     });
   }
+
   //edit
   openPatientEdit(row: any) {
     const dialogRef = this.dialog.open(
@@ -85,6 +87,22 @@ export class GestionPatientComponent implements OnInit {
     )
   }
 
+  // add quick consult
+  openQuickConsult(row:any)
+  {
+    const dialogRef = this.dialog.open(
+      EditQuickconsultDialogComponent, {
+      width: '50% auto',
+      data: row
+    }
+    );
+    dialogRef.afterClosed().subscribe(result => {
+      if (result == 'update') {
+
+      } this.showPatients();
+    }
+    )
+  }
 
   // ----[pagnation and table properties]
 

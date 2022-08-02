@@ -21,129 +21,136 @@ import { GestionPatientComponent } from './gestion-patient/gestion-patient.compo
 import { SuivieComponent } from './suivie/suivie.component';
 import { ComplicationComponent } from './complication/complication.component';
 import { AuthGuard } from '../_helper/auth.guard';
+import { Component } from '@angular/core';
+import { ConsultDetailsComponent } from './consultation/consult-details/consult-details.component';
 
 export const MaterialRoutes: Routes = [
   {
     path: 'button',
     component: ButtonsComponent,
-    canActivate:[AuthGuard]
+    canActivate: [AuthGuard]
   },
   {
     path: 'grid',
     component: GridComponent,
-    canActivate:[AuthGuard]
+    canActivate: [AuthGuard]
 
   },
   {
     path: 'lists',
     component: ListsComponent,
-    canActivate:[AuthGuard]
+    canActivate: [AuthGuard]
 
   },
   {
     path: 'menu',
     component: MenuComponent,
-    canActivate:[AuthGuard]
+    canActivate: [AuthGuard]
 
   },
   {
     path: 'tabs',
     component: TabsComponent,
-    canActivate:[AuthGuard]
+    canActivate: [AuthGuard]
 
   },
   {
     path: 'stepper',
     component: StepperComponent,
-    canActivate:[AuthGuard]
+    canActivate: [AuthGuard]
 
   },
   {
     path: 'expansion',
     component: ExpansionComponent,
-    canActivate:[AuthGuard]
+    canActivate: [AuthGuard]
 
   },
   {
     path: 'chips',
     component: ChipsComponent,
-    canActivate:[AuthGuard]
+    canActivate: [AuthGuard]
 
   },
   {
     path: 'toolbar',
     component: ToolbarComponent,
-    canActivate:[AuthGuard]
+    canActivate: [AuthGuard]
 
   },
   {
     path: 'progress-snipper',
     component: ProgressSnipperComponent,
-    canActivate:[AuthGuard]
+    canActivate: [AuthGuard]
 
   },
   {
     path: 'progress',
     component: ProgressComponent,
-    canActivate:[AuthGuard]
+    canActivate: [AuthGuard]
 
   },
   {
     path: 'dialog',
     component: DialogComponent,
-    canActivate:[AuthGuard]
+    canActivate: [AuthGuard]
 
   },
   {
     path: 'tooltip',
     component: TooltipComponent,
-    canActivate:[AuthGuard]
+    canActivate: [AuthGuard]
 
   },
   {
     path: 'snackbar',
     component: SnackbarComponent,
-    canActivate:[AuthGuard]
+    canActivate: [AuthGuard]
 
   },
   {
     path: 'slider',
     component: SliderComponent,
-    canActivate:[AuthGuard]
+    canActivate: [AuthGuard]
 
   },
   {
     path: 'slide-toggle',
     component: SlideToggleComponent,
-    canActivate:[AuthGuard]
+    canActivate: [AuthGuard]
 
   }
-,
+  ,
   {
     path: 'consultation',
     component: ConsultationComponent,
-    canActivate:[AuthGuard]
+    canActivate: [AuthGuard]
 
   }
   ,
   {
     path: 'gestionpatient',
     component: GestionPatientComponent,
-    canActivate:[AuthGuard]
+    canActivate: [AuthGuard]
 
   }
   ,
   {
     path: 'suivie',
     component: SuivieComponent,
-    canActivate:[AuthGuard]
+    canActivate: [AuthGuard]
 
   }
   ,
   {
     path: 'complication',
-    component: ComplicationComponent,   
-    canActivate:[AuthGuard]
+    component: ComplicationComponent,
+    canActivate: [AuthGuard]
 
+  },
+  {
+    path: 'consult-details',
+    component: ConsultDetailsComponent,
+    canActivate: [AuthGuard]
   }
 ];

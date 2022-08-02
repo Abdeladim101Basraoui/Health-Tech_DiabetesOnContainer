@@ -1,6 +1,7 @@
 import { animate, state, style, transition, trigger } from '@angular/animations';
 import { Component, OnInit } from '@angular/core';
 import { MatTableDataSource } from '@angular/material/table';
+import { Router } from '@angular/router';
 import { fichepatient } from 'src/app/_models/requests_models';
 import { RequestsService } from 'src/app/_services/requests.service';
 
@@ -25,8 +26,9 @@ export class ConsultationComponent implements OnInit {
   dataSource = new  MatTableDataSource<fichepatient>(this.ELEMENT_DATA);
   expandedElement!: fichepatient | null;
 
+  send:boolean = false;
 
-  constructor(private requestservice:RequestsService) { }
+  constructor(private requestservice:RequestsService,private route:Router) { }
 
   ngOnInit(): void {
     this.showFichePatient();
@@ -44,6 +46,13 @@ export class ConsultationComponent implements OnInit {
         
       }
     );
+  }
+
+  showdetials(_cin:string)
+  {
+    console.log(_cin);
+
+    this.route.navigate(['/consult-details'],{state:{cin:_cin}});
   }
 
 }
