@@ -1,6 +1,6 @@
 
 <mat-tab-group mat-align-tabs="center">
-    <mat-tab label="First"><app-questions-details></app-questions-details></mat-tab>
-    <mat-tab label="Second">Content 2</mat-tab>
-    <mat-tab label="Third">Content 3</mat-tab>
-  </mat-tab-group>
+    <mat-tab label="Questions" ><app-questions-details [cinSelected]="cinSelected"></app-questions-details></mat-tab>
+    <mat-tab label="Echographie"><app-echographie-details [cinSelected]="cinSelected"></app-echographie-details></mat-tab>
+    <mat-tab label="CIN" ><app-param-bio-details [cinSelected]="cinSelected"></app-param-bio-details></mat-tab>
+  </mat-tab-group>  

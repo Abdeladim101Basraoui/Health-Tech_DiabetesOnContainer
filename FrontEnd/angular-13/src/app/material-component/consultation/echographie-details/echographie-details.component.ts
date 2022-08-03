@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 
 @Component({
   selector: 'app-echographie-details',
@@ -8,8 +8,10 @@ import { Component, OnInit } from '@angular/core';
 export class EchographieDetailsComponent implements OnInit {
 
   constructor() { }
-
+  @Input() cinSelected!:string;
   ngOnInit(): void {
+
+    
   }
 
 }

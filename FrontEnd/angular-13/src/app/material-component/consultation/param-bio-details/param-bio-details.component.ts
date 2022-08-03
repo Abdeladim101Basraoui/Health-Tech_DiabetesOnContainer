@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 
 @Component({
   selector: 'app-param-bio-details',
@@ -8,8 +8,11 @@ import { Component, OnInit } from '@angular/core';
 export class ParamBioDetailsComponent implements OnInit {
 
   constructor() { }
+  @Input() cinSelected!:string;
 
   ngOnInit(): void {
+
+
   }
 
 }
