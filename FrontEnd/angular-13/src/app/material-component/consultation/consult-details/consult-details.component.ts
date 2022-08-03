@@ -10,9 +10,13 @@ export class ConsultDetailsComponent implements OnInit {
 
   //cin selected
   cinSelected!: string;
+  preIdSelected!:number;
 
   constructor(private router: Router) {
+
     this.cinSelected = this.router.getCurrentNavigation()?.extras.state?.cin;
+    this.preIdSelected = this.router.getCurrentNavigation()?.extras.state?.presId;
+    
     if (this.cinSelected == undefined) {
       this.router.navigate(['/consultation'])
       console.log('the sent cin is empty');

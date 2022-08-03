@@ -48,11 +48,11 @@ export class ConsultationComponent implements OnInit {
     );
   }
 
-  showdetials(_cin:string)
+  showdetials(_cin:string,_presId:number)
   {
     console.log(_cin);
 
-    this.route.navigate(['/consult-details'],{state:{cin:_cin}});
+    this.route.navigate(['/consult-details'],{state:{cin:_cin,presId:_presId}});
   }
 
 }

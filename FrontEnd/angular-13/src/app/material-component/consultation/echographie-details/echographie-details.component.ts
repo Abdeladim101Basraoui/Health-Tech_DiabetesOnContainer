@@ -9,6 +9,8 @@ export class EchographieDetailsComponent implements OnInit {
 
   constructor() { }
   @Input() cinSelected!:string;
+  @Input() preIsSelected!: number;
+
   ngOnInit(): void {
 
     

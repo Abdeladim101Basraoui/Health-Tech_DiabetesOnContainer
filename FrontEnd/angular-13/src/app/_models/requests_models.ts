@@ -38,7 +38,7 @@ export class fichepatient_post
 export class fichepatient extends fichepatient_post{
     prescriptionId!: number;
     patientFullName!: string;
-    // questions !: questions[];
+    questions !: questions[];
     // examainMedicals!: exams[];
  
 }

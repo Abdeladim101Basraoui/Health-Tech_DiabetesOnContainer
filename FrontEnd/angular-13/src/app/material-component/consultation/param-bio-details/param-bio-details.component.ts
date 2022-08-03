@@ -9,6 +9,7 @@ export class ParamBioDetailsComponent implements OnInit {
 
   constructor() { }
   @Input() cinSelected!:string;
+  @Input() preIsSelected!: number;
 
   ngOnInit(): void {
 

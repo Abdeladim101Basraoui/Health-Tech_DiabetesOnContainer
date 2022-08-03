@@ -50,4 +50,6 @@ public deletePatient(cin:string)
 {
   return this.http.delete(`${environment.baseAPIUrl}/${this.patientUrl}/${cin}`);
 }
+
+
 }
