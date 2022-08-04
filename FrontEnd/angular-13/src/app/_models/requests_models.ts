@@ -21,26 +21,25 @@ export class patient_Cud extends patient_put {
 //patient read
 export class patient_Read extends patient_Cud {
     fullName!: string;
-    prescriptionId!:number;
+    prescriptionId!: number;
 }
 
 //------------------
 //
-export class fichepatient_post
-{
-       cin!: string;
+export class fichepatient_post {
+    cin!: string;
     refMed!: string;
     nomPres!: string;
     motifPres!: string;
     datePres!: string;
 }
 
-export class fichepatient extends fichepatient_post{
+export class fichepatient extends fichepatient_post {
     prescriptionId!: number;
     patientFullName!: string;
     questions !: questions[];
     // examainMedicals!: exams[];
- 
+
 }
 
 
@@ -48,11 +47,15 @@ export class fichepatient extends fichepatient_post{
 
 // ----
 // questions requests
-export class questions {
-    questionId!: number;
+export class question_put {
+
     question1!: string;
     etatDuQuestion!: string;
     medecinNotes!: string;
+}
+
+export class questions extends question_put {
+    questionId!: number;
 }
 
 
@@ -65,33 +68,31 @@ export class exams {
     examainId!: number;
     // echographies!: echographies[];
     // paramBio!: paramBio[];
-    prescriptionId!:number;
-    nomDiagnostic!:string;
-    noteMedecin!:string;
-    imageDiagnositc!:string
+    prescriptionId!: number;
+    nomDiagnostic!: string;
+    noteMedecin!: string;
+    imageDiagnositc!: string
 }
 
 
 
 // -------
 // echographies requests 
-export class echographies
-{
-    echographieId!:number;
-    nomEchographie!:string;
-    noteMedecin!:string;
-    imageEchographie!:string;
-    autrePathology!:string;
-    examainId!:number;
+export class echographies {
+    echographieId!: number;
+    nomEchographie!: string;
+    noteMedecin!: string;
+    imageEchographie!: string;
+    autrePathology!: string;
+    examainId!: number;
 }
 
 // -------
 // paramBio requests
-export class paramBio
-{
- paramBioId!:number;   
- nomParam!:string;   
- mesureParam!:string;   
- noteMedecin!:string;   
- examainId!:number;   
+export class paramBio {
+    paramBioId!: number;
+    nomParam!: string;
+    mesureParam!: string;
+    noteMedecin!: string;
+    examainId!: number;
 }

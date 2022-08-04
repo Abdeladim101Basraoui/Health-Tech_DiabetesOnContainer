@@ -1,0 +1,62 @@
+<div>
+    <h3 mat-dialog-title>Patient Informations</h3>
+    <!-- using reactive forms -->
+    <div mat-dialog-content>
+
+        <form [formGroup]="questionForm">
+            <!-- Qustions -->
+            <div class="question">
+                <mat-form-field appearance="outline">
+                    <mat-label>Question</mat-label>
+                    <input matInput placeholder="...?" [formControl]="question" formControlName="question" />
+                    <mat-error *ngIf="question.invalid">{{ getErrorMessage() }}</mat-error>
+                </mat-form-field>
+            </div>
+            <!-- question state -->
+            <mat-form-field class="example-chip-list" appearance="fill">
+                <mat-label>simple response</mat-label>
+                <mat-chip-list #chipList aria-label="quick response section">
+                  <mat-chip
+                    *ngFor="let fruit of responses"
+                    (removed)="remove(fruit)">
+                    {{fruit}}
+                    <button matChipRemove>
+                      <mat-icon>cancel</mat-icon>
+                    </button>
+                  </mat-chip>
+                  <input
+                    placeholder="unusual response..."
+                    #responseInput
+                    [formControl]="resCtrl"
+                    [matAutocomplete]="auto"
+                    [matChipInputFor]="chipList"
+                    [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                    (matChipInputTokenEnd)="add($event)">
+                </mat-chip-list>
+                <mat-autocomplete #auto="matAutocomplete" (optionSelected)="selected($event)">
+                  <mat-option *ngFor="let res of filteredRes | async" [value]="res">
+                    {{fruit}}
+                  </mat-option>
+                </mat-autocomplete>
+              </mat-form-field>
+              
+
+            <!-- med Notes -->
+            <div class="medNotes">
+                <mat-form-field appearance="outline">
+                    <mat-label>Notes :</mat-label>
+                    <textarea matInput placeholder="your notes Doc ..." [formControl]="notes"
+                        formControlName="notes"></textarea>
+                    <mat-error *ngIf="notes.invalid">{{ getErrorMessage() }}</mat-error>
+                </mat-form-field>
+            </div>
+
+
+        </form>
+        <!-- left buttons -->
+        <div class="down-btn" mat-dialog-action [align]="'right'">
+            <button mat-raised-button color="warn" aria-label="close" mat-dialog-close>close</button>
+            <button mat-raised-button style="margin-left: 4px;" color="accent" aria-label="submit"
+                (click)="PostQuestion()">{{confirmBtnstate}}</button>
+        </div>
+    </div>

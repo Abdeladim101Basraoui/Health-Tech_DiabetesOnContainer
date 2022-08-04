@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from 'src/environments/environment';
-import { fichepatient, fichepatient_post, patient_put, patient_Read} from '../_models/requests_models';
+import { fichepatient, fichepatient_post, patient_put, patient_Read, question_put} from '../_models/requests_models';
 import { AuthenticationService } from './authentication.service';
 
 @Injectable({
@@ -25,6 +25,13 @@ export class RequestsService {
   public postFichePatient(data:fichepatient_post)
   {
     return this.http.post(`${environment.baseAPIUrl}/${this.fichePatientUrl}`,data);
+  }
+
+  //add question
+  public addQuestion(cin:string,presId:number,data:question_put)
+  {
+    ///api/FichePatients/Add/Q/{Cin}/PresId
+    return this.http.post(`${environment.baseAPIUrl}/${this.fichePatientUrl}/Add/${cin}/ ${presId}`,data);
   }
 
 

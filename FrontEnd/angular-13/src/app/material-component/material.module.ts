@@ -41,6 +41,7 @@ import { ConsultDetailsComponent } from './consultation/consult-details/consult-
 import { QuestionsDetailsComponent } from './consultation/questions-details/questions-details.component';
 import { EchographieDetailsComponent } from './consultation/echographie-details/echographie-details.component';
 import { ParamBioDetailsComponent } from './consultation/param-bio-details/param-bio-details.component';
+import { QuestionDialogComponent } from './consultation/questions-details/question-dialog/question-dialog.component';
 
 @NgModule({
   imports: [
@@ -82,7 +83,8 @@ import { ParamBioDetailsComponent } from './consultation/param-bio-details/param
     ConsultDetailsComponent,
     QuestionsDetailsComponent,
     EchographieDetailsComponent,
-    ParamBioDetailsComponent
+    ParamBioDetailsComponent,
+    QuestionDialogComponent
   ]
 })
 export class MaterialComponentsModule {}
