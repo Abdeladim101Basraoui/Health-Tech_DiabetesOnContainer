@@ -27,14 +27,10 @@ export class QuestionsDetailsComponent implements OnInit {
   getQuestions() {
     this.reqService.getFichePatient().subscribe(
       req => {
-
         console.log(req);
-        
         console.log(this.preIsSelected);
-        // this.dataSource.data = req[this.preIsSelected].questions as questions[];
+        this.ELEMENT_DATA = req[this.preIsSelected].questions;
         console.log(req[0].questions);
-
-
       }, err => {
 
       }
