@@ -1,0 +1,116 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="DiabetesOnContainer.Controllers.AnalysesController">
+    <Position X="0.5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>RAAACAAAAAABpAAAAAABAAAAAACAACAAAAAAAAAAABQ=</HashCode>
+      <FileName>Controllers\AnalysesController.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DiabetesOnContainer.Controllers.AssistantsController" Collapsed="true">
+    <Position X="6" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAQAGACAAAhAAAAEABIAAAAAEBAAAAAQEQAACAAAA=</HashCode>
+      <FileName>Controllers\AssistantsController.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DiabetesOnContainer.Controllers.Auth" Collapsed="true">
+    <Position X="9" Y="2" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Controllers\Auth.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DiabetesOnContainer.Controllers.BilansController" Collapsed="true">
+    <Position X="6.5" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AQAAEAAAACAABAAABAABAAAAAAQAACQAAEAAQAAAAAA=</HashCode>
+      <FileName>Controllers\BilansController.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DiabetesOnContainer.Controllers.complicationsController" Collapsed="true">
+    <Position X="3.5" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAIkBAAIAAABAAAAAAIIABAAEAAAAAAAABI=</HashCode>
+      <FileName>Controllers\complicationsController.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DiabetesOnContainer.Controllers.DiabeticiensController" Collapsed="true">
+    <Position X="4.75" Y="3.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAEACACAhAAAAAABAgAAgAEBABAAAQEQAACAAAA=</HashCode>
+      <FileName>Controllers\DiabeticiensController.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DiabetesOnContainer.Controllers.EchographiesController" Collapsed="true">
+    <Position X="9" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAACAAABAAAhACEAAAhAAAAIAAAAAAAAAAAABAAAgg=</HashCode>
+      <FileName>Controllers\EchographiesController.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DiabetesOnContainer.Controllers.ErrorController" Collapsed="true">
+    <Position X="9.75" Y="0.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Controllers\ErrorController.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DiabetesOnContainer.Controllers.ExamainMedicalsController" Collapsed="true">
+    <Position X="7.5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>ABAAAAAAAAAARAQAAAABAAAAAAgAAAAAAAAAABCgAIA=</HashCode>
+      <FileName>Controllers\ExamainMedicalsController.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DiabetesOnContainer.Controllers.FicheMedicalsController" Collapsed="true">
+    <Position X="6.75" Y="3.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAABAAAAAABDEAAAEIAAAAAAAAQABQCAEA=</HashCode>
+      <FileName>Controllers\FicheMedicalsController.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DiabetesOnContainer.Controllers.FichePatientsController" Collapsed="true">
+    <Position X="10.25" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAABAAAAEAAAhIQAgAADIAAAgAAAAAAAQAAAAQCAAAA=</HashCode>
+      <FileName>Controllers\FichePatientsController.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DiabetesOnContainer.Controllers.HistoriquesController" Collapsed="true">
+    <Position X="2.25" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAwAAAAAaBgAAAAAFAAAAQCAAAAAAQAAAAAAAAQA=</HashCode>
+      <FileName>Controllers\HistoriquesController.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DiabetesOnContainer.Controllers.ParamBiosController" Collapsed="true">
+    <Position X="2.75" Y="3.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAIAAAIAIADBAAAAABAAAACAAAAACIAAIAAABAAAA=</HashCode>
+      <FileName>Controllers\ParamBiosController.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DiabetesOnContainer.Controllers.PatientsController">
+    <Position X="2.5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>EAAAAEQACAAABAAAAAABAAAAAAiEAAAAAAAAAAAAACA=</HashCode>
+      <FileName>Controllers\PatientsController.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DiabetesOnContainer.Controllers.QuestionsController" Collapsed="true">
+    <Position X="0.75" Y="3.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAABAAAAAAAABAAAAAABAAAQAABAIAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Controllers\QuestionsController.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DiabetesOnContainer.Controllers.TraitementsController" Collapsed="true">
+    <Position X="1.25" Y="3.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAACAAAAAAEBAAAAAABAAAQQAGAACAAAAAAAACAIAA=</HashCode>
+      <FileName>Controllers\TraitementsController.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

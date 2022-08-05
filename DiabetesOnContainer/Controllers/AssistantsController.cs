@@ -190,7 +190,7 @@ namespace DiabetesOnContainer.Controllers
             }
 
 
-            string Token =  CreateToken(assist.Email);
+            string Token = CreateToken(assist.Email);
             return Ok(Token);
         }
 
@@ -225,7 +225,7 @@ namespace DiabetesOnContainer.Controllers
             {
                 return NotFound();
             }
-        
+
             await _context.SaveChangesAsync();
 
             _context.Assistants.Remove(assistant);
@@ -261,7 +261,9 @@ namespace DiabetesOnContainer.Controllers
             List<Claim> claims = new List<Claim>()
             {
                 new Claim(ClaimTypes.Name,email),
-                new Claim(ClaimTypes.Role,"Assist")
+                new Claim(ClaimTypes.Role,"Assist"),
+                new Claim("userEmail",email),
+                new Claim("userRole","Assist")
             };
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration.GetSection("AppSettings:Token").Value));
@@ -296,7 +298,7 @@ namespace DiabetesOnContainer.Controllers
             return refreshtoken;
 
         }
-        
+
         private void SetRefreshToken(RefreshToken refreshToken)
         {
             var cookiesOptions = new CookieOptions
@@ -305,12 +307,12 @@ namespace DiabetesOnContainer.Controllers
                 Expires = refreshToken.Expires
             };
 
-            Response.Cookies.Append("RefreshToken",refreshToken.Token,cookiesOptions);
+            Response.Cookies.Append("RefreshToken", refreshToken.Token, cookiesOptions);
 
             refreshToken.Id = Guid.NewGuid();
             _context.RefreshTokens.Add(refreshToken);
             _context.SaveChanges();
-        
+
         }
 
 
